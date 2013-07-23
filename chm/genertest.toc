@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HEAD></HEAD><HTML><BODY>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Package genertest:  Contents">
+<param name="Local" value="00Index.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Package genertest:  R objects">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="genertest-package">
+<param name="Local" value="genertest-package.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="genertest">
+<param name="Local" value="genertest.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Merge.pdf">
+<param name="Local" value="Merge.pdf.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="my.data">
+<param name="Local" value="my.data.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="write.all">
+<param name="Local" value="write.all.html">
+</OBJECT>
+</UL>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Package genertest:  Titles">
+</OBJECT>
+<UL>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="(Automated) Exam Generation using R ">
+<param name="Local" value="genertest-package.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Example Database with Questions">
+<param name="Local" value="my.data.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Function that Generates Tests">
+<param name="Local" value="genertest.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Merges PDF files">
+<param name="Local" value="Merge.pdf.html">
+</OBJECT>
+<LI> <OBJECT type="text/sitemap">
+<param name="Name" value="Writes All the Questions from a Database">
+<param name="Local" value="write.all.html">
+</OBJECT>
+</UL>
+</UL>
+</BODY></HTML>

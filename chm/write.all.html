@@ -1,0 +1,147 @@
+<html><head><title>Writes All the Questions from a Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>write.all(genertest)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   write.all">
+<param name="keyword" value=" Writes All the Questions from a Database">
+</object>
+
+
+<h2>Writes All the Questions from a Database</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Writes all the questions from the database of questions (my.data) in the same format used to prepare the tests. The function is useful to check the oubtainable output for the questions included in the database. The topic, number of points and exclusion criteria of each question is preinted out as well.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+write.all(my.data, my.outdir, my.seed = 1999, 
+my.include = NA, generate.solutions = FALSE, 
+my.title = "", my.date = "", my.prefix = "exam", 
+head.name = "Name", head.id = "ID number", 
+head.points = "Number of points", head.prefix = "MED", 
+my.language = "english", use.Sweave = FALSE, compile.pdf = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>my.data</code></td>
+<td>
+Name of the tab delimited file including the questions, either the full path should be given or the file should be placed in the R working directory, should be a string, written between quotes</td></tr>
+<tr valign="top"><td><code>my.outdir</code></td>
+<td>
+Name of the directory where the exams will be written, should be a string, written between quotes; full path must be given</td></tr>
+<tr valign="top"><td><code>my.seed</code></td>
+<td>
+Seed used to inizialize the random number generator, useful to get reproducibile results</td></tr>
+<tr valign="top"><td><code>my.include</code></td>
+<td>
+The number of the column in the database of questions in which a TRUE/FALSE indicator in included, to indicate which questions should be included (T) (or excluded (F)), if left to defalut NA all the questions should be considere for inclusion. The column number rather than a fixed name is used since in principle the same database can be used to generate test for different courses or of different difficulties</td></tr>
+<tr valign="top"><td><code>generate.solutions</code></td>
+<td>
+Indicator (TRUE or FALSE) that indicates if the solutions of the tests must be generated; if set to TRUE it generated a LaTeX (or PDF) file with solutions corresponding to each exam</td></tr>
+<tr valign="top"><td><code>my.title</code></td>
+<td>
+Name of the exam - to be displayed in the header</td></tr>
+<tr valign="top"><td><code>my.date</code></td>
+<td>
+Date of the exam - to be displayed in the header</td></tr>
+<tr valign="top"><td><code>my.prefix</code></td>
+<td>
+String with which the names of the LaTeX files of the tests begins</td></tr>
+<tr valign="top"><td><code>head.name</code></td>
+<td>
+String indicating the name of the student - to be displayed in the header (the default is "Name" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.id</code></td>
+<td>
+String indicating the identification number of the student - to be displayed in the header (the default is "ID number" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.points</code></td>
+<td>
+String indicating how to indicate the number of points - to be displayed in the header (the default is "Number of points" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.prefix</code></td>
+<td>
+An alpha-numerical ID is generated for each test. The ID is generated pasting <code> head.prefix</code>, a random number and a progressive number that indicates the test</td></tr>
+<tr valign="top"><td><code>my.language</code></td>
+<td>
+String indicating the language in which the test is written - it is used to call a LaTeX Babel package that contains the appropriate language settings (a call to the Babel package will be included in the header of the *.tex files)</td></tr>
+<tr valign="top"><td><code>use.Sweave</code></td>
+<td>
+Indicator of whether in the database there are some exercises written using Sweave code; default is FALSE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details </td></tr>
+<tr valign="top"><td><code>compile.pdf</code></td>
+<td>
+Indicator of whether the *.tex files should be compiled to *.pdf files (compiled if set to TRUE. See details</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+See function genertest() for more details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Writes LaTeX (od PDF) files containing the texts of the exams and returns a list containing the IDs of the questions selected for each test and the list of the files *.tex files that were generated. 
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>Questions</code></td>
+<td>
+Each element of the list contains a vector that can be used to identify the questions selected for an exam. The index for a question represents the row in which the question appears (or begins) in the database of questions. If permuted versions of the same test were produced (repeat.each.test&gt;1) then only one record for each set of permuted tests is reported</td></tr>
+<tr valign="top"><td><code>files</code></td>
+<td>
+List of the generated files (*.tex or *.pdf, depending on the selected options)</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Lara Lusa
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://sites.google.com/site/lara3107/Home/software/genertest">http://sites.google.com/site/lara3107/Home/software/genertest</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="genertest.html">genertest</a></code>, <code><a href="my.data.html">my.data</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+##data(my.data)
+#my.title&lt;-"Medical Faculty - Undergraduates  - Exam of Biostatistics"
+#my.date&lt;-"09.12.2008"
+#my.outdir&lt;-"C:\Documents and Settings\genertest" 
+#this directory must exist and Sweave and pdflatex.exe must be available from here  
+## TMP1&lt;-write.all(my.data, my.outdir, my.seed=2, my.include=3, 
+#generate.solutions=TRUE, my.title=my.title, my.date=my.date, 
+#my.prefix="Exam", head.name="Name", head.id="ID Number", 
+#head.points="Points", head.prefix="Exam", my.language="english", 
+# use.Sweave=TRUE, compile.pdf=TRUE)
+##
+</pre>
+
+
+
+<hr><div align="center">[Package <em>genertest</em> version 1.0 <a href="00Index.html">Index]</a></div>
+
+</body></html>

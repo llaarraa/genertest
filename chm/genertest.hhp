@@ -1,0 +1,19 @@
+[OPTIONS]
+Auto Index=Yes
+Contents file=genertest.toc
+Compatibility=1.1 or later
+Compiled file=genertest.chm
+Default topic=00Index.html
+Display compile progress=No
+Full-text search=Yes
+Full text search stop list file=..\..\..\gnuwin32\help\R.stp
+Title=R Help for package genertest
+
+
+[FILES]
+00Index.html
+Merge.pdf.html
+genertest-package.html
+genertest.html
+my.data.html
+write.all.html

@@ -1,0 +1,10 @@
+Package: genertest
+Type: Package
+Title: Generates tests
+Version: 1.0
+Date: 2009-01-14
+Author: Lara Lusa
+Maintainer: Lara Lusa <lara.lusa@mf.uni-lj.si>
+Description: Package that generates tests with questions drawn from a tab-delimited database. It can be used to randomly draw questions, to permute questions and answers, to select questions to include in the tests according to their topic or difficulty, to generate questions containing Sweave syntax. 
+License: GPL2
+LazyLoad: yes

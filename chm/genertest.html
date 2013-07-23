@@ -1,0 +1,174 @@
+<html><head><title>Function that Generates Tests</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>genertest(genertest)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   genertest">
+<param name="keyword" value=" Function that Generates Tests">
+</object>
+
+
+<h2>Function that Generates Tests</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function generates test with questions drawn from a tab-delimited database. It can be used to randomly draw questions, to permute questions and answers, to select questions to include in the exams according to their topic or difficulty, to generate questions containing Sweave code. The output is a LaTeX or PDF file for each of the tests.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+genertest(my.data, my.outdir, num.tests = 1, 
+repeat.each.test = 1, my.seed = 1999, topics = NULL, 
+topics.points = NULL, tot.points = NULL, 
+topics.points.difficulty = NULL, min.distance = 3, 
+my.include = NA, generate.solutions = FALSE, 
+my.title = "", my.date = "", my.prefix = "exam", 
+head.name = "Name", head.id = "ID number", 
+head.points = "Number of points", head.prefix = "MED", 
+my.language = "english", use.Sweave = FALSE, compile.pdf = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>my.data</code></td>
+<td>
+Name of the tab delimited file including the questions, either the full path should be given or the file should be placed in the R working directory, should be a string, written between quotes. See details.</td></tr>
+<tr valign="top"><td><code>my.outdir</code></td>
+<td>
+Name of the directory where the exams will be written, should be a string, written between quotes; full path must be given</td></tr>
+<tr valign="top"><td><code>num.tests</code></td>
+<td>
+Number of different tests to be generated</td></tr>
+<tr valign="top"><td><code>repeat.each.test</code></td>
+<td>
+Number of times that each test needs to be permuted, to generate permuted version of the same test, if set to 1 there will be no permutation and just one test of each kind will be generated</td></tr>
+<tr valign="top"><td><code>my.seed</code></td>
+<td>
+Seed used to inizialize the random number generator, useful to get reproducibile results</td></tr>
+<tr valign="top"><td><code>topics</code></td>
+<td>
+Vector listing which topics should be included in the test, these strings have to match exactly the topics listed in the Topic variable in the database of questions</td></tr>
+<tr valign="top"><td><code>topics.points</code></td>
+<td>
+Vector listing the number of points for each topic to include in the exam</td></tr>
+<tr valign="top"><td><code>tot.points</code></td>
+<td>
+Total number of points to be included in the exams. It will be used only if <code>topics</code> was not specified, otherwise it will be ignored and the total number of points will be calculated using the sum of points specified in <code>topics.points</code> or <code>topics.points.difficulty</code></td></tr>
+<tr valign="top"><td><code>topics.points.difficulty</code></td>
+<td>
+Matrix with number of rows equal to the number of topics and number of columns equal to the number of different difficulties that one wishes to include. For example, if the difficulties in the question database were coded 1 to 4, the number in the first column and first row will define how many points from the first topic with difficulty 1 should be included, the number of second column and first row the points from topic 1 difficulty 2, etc... At most four different columns can be specified in this case. If you do not wish to select any questions from a specific combination of topic and difficulty write 0 in the corresponding cell</td></tr>
+<tr valign="top"><td><code>min.distance</code></td>
+<td>
+Minimum distance between two consecutive tests that contain the same questions, 0=no constrain, 1=at least 1 test in between before the same question appears, etc...</td></tr>
+<tr valign="top"><td><code>my.include</code></td>
+<td>
+The number of the column in the database of questions in which a TRUE/FALSE indicator in included, to indicate which questions should be included (T) (or excluded (F)), if left to defalut NA all the questions should be considere for inclusion. The column number rather than a fixed name is used since in principle the same database can be used to generate test for different courses or of different difficulties</td></tr>
+<tr valign="top"><td><code>generate.solutions</code></td>
+<td>
+Indicator (TRUE or FALSE) that indicates if the solutions of the tests must be generated; if set to TRUE it generated a LaTeX (or PDF) file with solutions corresponding to each exam</td></tr>
+<tr valign="top"><td><code>my.title</code></td>
+<td>
+Name of the exam - to be displayed in the header</td></tr>
+<tr valign="top"><td><code>my.date</code></td>
+<td>
+Date of the exam - to be displayed in the header</td></tr>
+<tr valign="top"><td><code>my.prefix</code></td>
+<td>
+String with which the names of the LaTeX files of the tests begins</td></tr>
+<tr valign="top"><td><code>head.name</code></td>
+<td>
+String indicating the name of the student - to be displayed in the header (the default is "Name" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.id</code></td>
+<td>
+String indicating the identification number of the student - to be displayed in the header (the default is "ID number" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.points</code></td>
+<td>
+String indicating how to indicate the number of points - to be displayed in the header (the default is "Number of points" but it can be changed if a language different than English is used)</td></tr>
+<tr valign="top"><td><code>head.prefix</code></td>
+<td>
+An alpha-numerical ID is generated for each test. The ID is generated pasting <code> head.prefix</code>, a random number and a progressive number that indicates the test</td></tr>
+<tr valign="top"><td><code>my.language</code></td>
+<td>
+String indicating the language in which the test is written - it is used to call a LaTeX Babel package that contains the appropriate language settings (a call to the Babel package will be included in the header of the *.tex files)</td></tr>
+<tr valign="top"><td><code>use.Sweave</code></td>
+<td>
+Indicator of whether in the database there are some exercises written using Sweave code; default is FALSE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details </td></tr>
+<tr valign="top"><td><code>compile.pdf</code></td>
+<td>
+Indicator of whether the *.tex files should be compiled to *.pdf files (compiled if set to TRUE. See details</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+my.data must be prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Question, Question.ID) other variables can be included (Answer, Topic, Points, etc). See <code><a href="my.data.html">my.data</a></code> for more details. 
+If use.Sweave=TRUE,   a call to the Sweave package will be included in the header of the *.rnw and *.tex files. For this reason Sweave package must be available to LaTeX compiler. File Sweave.sty can be included in the directory my.outdir in case of problems related to package unavailability. 
+If compile.pdf=TRUE, pdflatex.exe program from MikTeX will be invoked to convert *.tex to *.pdf files. MikTeX must be installed locally and its executables (as pdflatex.exe) must be available from my.outdir directory. See MikTeX documentation. If the user wishes to use a different program than pdflatex.exe to compile LaTeX files, set compile.pdf=FALSE and manually compile the *.tex files outside R
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Writes LaTeX (od PDF) files containing the texts of the exams and returns a list containing the IDs of the questions selected for each test and the list of the files *.tex files that were generated. 
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>Questions</code></td>
+<td>
+Each element of the list contains a vector that can be used to identify the questions selected for an exam. The index for a question represents the row in which the question appears (or begins) in the database of questions. If permuted versions of the same test were produced (repeat.each.test&gt;1) then only one record for each set of permuted tests is reported</td></tr>
+<tr valign="top"><td><code>files</code></td>
+<td>
+List of the generated files (*.tex or *.pdf, depending on the selected options)</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Lara Lusa
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://sites.google.com/site/lara3107/Home/software/genertest">http://sites.google.com/site/lara3107/Home/software/genertest</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code>write.all</code>, <code><a href="my.data.html">my.data</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+#data(my.data)
+#my.title&lt;-"Medical Faculty - Undergraduates  - Exam of Biostatistics"
+#my.date&lt;-"09.12.2008"
+#my.outdir&lt;-"C:\Documents and Settings\"  
+#Sweave.sty and pdflatex.exe must be available from this directory
+#          TMP&lt;-genertest(my.data, my.outdir, num.tests=2, repeat.each.test=1, 
+#my.seed=2, topics=c("Descr", "Probability"), topics.points=c(20,30), 
+#tot.points=NULL, topics.points.difficulty=NULL, min.distance=0, 
+#my.include=3, generate.solutions=TRUE, my.title=my.title, 
+#my.date=my.date, my.prefix="Exam", head.name="Name", head.id="ID Number", 
+#head.points="Points", head.prefix="Exam", my.language="english", 
+#use.Sweave=TRUE, compile.pdf=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>genertest</em> version 1.0 <a href="00Index.html">Index]</a></div>
+
+</body></html>

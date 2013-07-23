@@ -1,0 +1,87 @@
+<html><head><title>Example Database with Questions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>my.data(genertest)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   my.data">
+<param name="keyword" value=" Example Database with Questions">
+</object>
+
+
+<h2>Example Database with Questions</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Tab-delimited database that can be used with functions to generate tests included in the genertest package.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(my.data)</pre>
+
+
+<h3>Format</h3>
+
+<p>
+A dataset containing questions, answers and other variables necessary for test generation. Each question can be specified using a header (first line where the question appears in the dataset) and sub-questions (lines after the header and before a new question begins).
+<dl>
+<dt><code>Topic</code></dt><dd>Topic of the question; can be specified only for the header of a question, optional</dd>
+<dt><code>Points</code></dt><dd>Number of points; mandatory for the header of all questions</dd>
+<dt><code>Question.ID</code></dt><dd>Question ID; mandatory for the header of all questions</dd>
+<dt><code>IncludeMed</code></dt><dd>a logical vector; specified for the header of the questions, it indicates if the question should be included (TRUE) or not (FALSE); optional, see genertest() documentation </dd>
+<dt><code>IncludeDM</code></dt><dd>a logical vector; specified for the header of the questions, it indicates if the question should be included (TRUE) or not (FALSE); optional, see genertest() documentation</dd>
+<dt><code>Question</code></dt><dd>Text of the question (in the header) and sub-questions (for lines where Question.ID is empty); see details for specification of questions using Sweave syntax, mandatory.</dd>
+<dt><code>Answer</code></dt><dd>Answer to the questions and sub-questions, mandatory if the user decides to generate the solutions of the tests - see genertest() documentation</dd>
+<dt><code>ExtraLines</code></dt><dd>Number of empty lines to be left after the question (or sub-questions), if left missing no empty lines will be added; can be specified for header and sub-questions, optional</dd>
+<dt><code>ExcludeIf</code></dt><dd>Questions that should be excluded if the current question is included in the test (using Question.ID to identify the questions). If more than a question should be excluded question IDs to be excluded should be separated by a comma;  if omitted or missing from the header of some questions it will be assumed that no question should be excluded when the current question is included in the text; optional</dd>
+<dt><code>PermuteOK</code></dt><dd>a logical vector: indicates if the sub-questions can be permuted (TRUE) or not (FALSE); optional, if omitted or missing for the header of some questions it will be assumed that sub-questions should not be permuted</dd>
+</dl>
+
+<h3>Details</h3>
+
+<p>
+Each question can be specified using a header (first line where the question appears in the dataset) and sub-questions (lines after the header and before a new question begins). The beginning of a new question is indicated specifiying a question ID, i.e., filling the value of Question.ID, this should be done exclusively for the lines where a question begins. Lines that have an empty Question.ID will be considered as sub-questions. 
+Number of points must be specified for each header. Topic, ExcludeIf, PermuteOK and vector indicating which questions should be excluded (in this dataset: IncludeMed and IncludeDM) can be specified in the header of the questions.
+Sweave code can be used to specify the text of questions and answers; it is important that an empty line is left before the beginning of Sweave code-chunks (indicated with &lt;&lt;&gt;&gt;= ) and to go to a new line after the end of the Sweave code-chunk (indicated with @). 
+The last line of the dataset is a fake question, indicated with topic "end", its own question ID and 0 points. In the current version of the implementation of genertest() function it is needed - if omitted, the(real) question that appears at the end of the file will never be included in the tests.
+</p>
+
+
+<h3>Source</h3>
+
+<p>
+<a href="http://sites.google.com/site/lara3107/Home/software/genertest">http://sites.google.com/site/lara3107/Home/software/genertest</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+<a href="http://sites.google.com/site/lara3107/Home/software/genertest">http://sites.google.com/site/lara3107/Home/software/genertest</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="write.all.html">write.all</a></code>, <code><a href="genertest-package.html">genertest</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(my.data)
+str(data)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>genertest</em> version 1.0 <a href="00Index.html">Index]</a></div>
+
+</body></html>
