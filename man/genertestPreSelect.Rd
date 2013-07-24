@@ -1,10 +1,10 @@
-\name{genertest}
-\alias{genertest}
-\title{Function that Generates Tests}
+\name{genertestPreSelect}
+\alias{genertestPreSelect}
+\title{Function that Generates Tests using a list of prespecified questions}
 \description{
-  This function generates tests with questions drawn from a tab-delimited database. It can be used to randomly draw questions, to permute questions and answers, to select questions to include in the exams based to their topic, to generate questions containing Sweave code. The output is a LaTeX or PDF file for each of the tests.}
+  This function generates tests with questions drawn from a tab-delimited database. The questions to be included in each test are specified by the user. The tests can include permuted questions and answers, or be generated using Sweave code. The output is a LaTeX or PDF file for each of the tests.}
 \usage{
-genertest(my.db.name, my.outdir, num.tests = 1, 
+genertestPreSelect(my.db.name, my.outdir, num.tests = 1, 
 repeat.each.test = 1, my.seed = 1999, topics = NULL, 
 topics.points = NULL, tot.points = NULL, 
 min.distance = 3, generate.solutions = FALSE, 
@@ -41,7 +41,7 @@ genertest<-function(my.data, my.outdir,  num.tests=1, repeat.each.test=1, my.see
   \item{my.language}{String indicating the language in which the test is written - it is used to call a LaTeX Babel package that contains the appropriate language settings (a call to the Babel package will be included in the header of the *.tex files)}
   \item{use.Sweave}{Indicator of whether in the database there are some exercises written using Sweave code; default is FALSE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details }
   \item{compile.pdf}{Indicator of whether the *.tex files should be compiled to *.pdf files (compiled if set to TRUE. See details}
-  \item{my.final.sentence}{A string with a sentence that will be written in bold at the end of each exam. If set to NULL (default) no sentence will be displayed.}
+  \item{final.sentence}{A string with a sentence that will be written in bold at the end of each exam. If set to NULL (default) no sentence will be displayed.}
   
 }
 \details{
@@ -67,14 +67,14 @@ my.date<-"31.7.2013"
 #Sweave.sty and pdflatex.exe must be available from this directory
 #name and path of the database with the questions
 my.file.name=paste(path.package("genertest"),"/extdata/questionsExamples.txt",sep="")
-TMP<-genertest(my.file.name, my.outdir=NULL, num.tests=2, repeat.each.test=1, 
-my.seed=2, topics=c("Descr", "Probability"), topics.points=c(20,30), 
-min.distance=0, generate.solutions=TRUE, 
+gPS.output<-genertestPreSelect(my.file.name, my.outdir=NULL, list.QID=list(c(1,2,3), c(2,3,4)), num.tests=2, repeat.each.test=3, 
+my.seed=2, generate.solutions=TRUE, 
 my.title=my.title, my.date=my.date, my.prefix="Exam", head.name="Name", head.id="ID Number", 
 head.points="Points", head.prefix="Exam", my.language="english", 
 use.Sweave=TRUE, compile.pdf=TRUE, my.final.sentence="Good luck!")
 
-
+#merge the files in a single file
+Merge.pdf(gPS.output)
 }
 \seealso{\code{\link{write.all}}, \code{\link{my.data}}}
 \keyword{misc}

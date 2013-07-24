@@ -2,11 +2,11 @@
 \alias{write.all}
 \title{Writes All the Questions from a Database}
 \description{
- Writes all the questions from the database of questions (my.data) in the same format used to prepare the tests. The function is useful to check the oubtainable output for the questions included in the database. The topic, number of points and exclusion criteria of each question is preinted out as well. 
+ Writes all the questions from the database of questions (my.data) in the same format used to prepare the tests. The function is useful to check the obtainable output for the questions included in the database. The topic, number of points and exclusion criteria of each question is also printed out. 
 }
 \usage{
-write.all(my.data, my.outdir, my.seed = 1999, 
-my.include = NA, generate.solutions = FALSE, 
+write.all(my.db.name, my.outdir, my.seed = 1999, 
+generate.solutions = FALSE, 
 my.title = "", my.date = "", my.prefix = "exam", 
 head.name = "Name", head.id = "ID number", 
 head.points = "Number of points", head.prefix = "MED", 
@@ -36,23 +36,31 @@ See function genertest() for more details.
 Writes LaTeX (od PDF) files containing the texts of the exams and returns a list containing the IDs of the questions selected for each test and the list of the files *.tex files that were generated. 
    \item{Questions}{Each element of the list contains a vector that can be used to identify the questions selected for an exam. The index for a question represents the row in which the question appears (or begins) in the database of questions. If permuted versions of the same test were produced (repeat.each.test>1) then only one record for each set of permuted tests is reported}
   \item{files}{List of the generated files (*.tex or *.pdf, depending on the selected options)}
+  \item{errors}{A string with the errors encountered during the execution of the function, if any.)}
+
 }
-\references{\url{http://sites.google.com/site/lara3107/Home/software/genertest}}
+\references{\url{http://sites.google.com/site/lara3107/Home/software/genertest}, \url{https://github.com/llaarraa/genertest}}
 \author{Lara Lusa}
 \note{}
 
 \seealso{\code{\link{genertest}}, \code{\link{my.data}}}
 \examples{
 ##data(my.data)
-#my.title<-"Medical Faculty - Undergraduates  - Exam of Biostatistics"
-#my.date<-"09.12.2008"
+my.title<-"Medical Faculty - Undergraduates  - Exam of Biostatistics"
+my.date<-"31.7.2013"
+my.file.name=paste(path.package("genertest"),"/extdata/questionsExamples.txt",sep="")
+
 #my.outdir<-"C:\\Documents and Settings\\genertest" 
-#this directory must exist and Sweave and pdflatex.exe must be available from here  
-## TMP1<-write.all(my.data, my.outdir, my.seed=2, my.include=3, 
-#generate.solutions=TRUE, my.title=my.title, my.date=my.date, 
-#my.prefix="Exam", head.name="Name", head.id="ID Number", 
-#head.points="Points", head.prefix="Exam", my.language="english", 
-# use.Sweave=TRUE, compile.pdf=TRUE)
+
+TMP1<-write.all(my.file.name, my.outdir=NULL, my.seed=2, 
+generate.solutions=TRUE, my.title=my.title, my.date=my.date, 
+my.prefix="Exam", head.name="Name", head.id="ID Number", 
+head.points="Points", head.prefix="Exam", my.language="english", 
+use.Sweave=TRUE, compile.pdf=TRUE)
+
+
+
+
 ##
 }  
 \keyword{misc}

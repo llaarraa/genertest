@@ -1,0 +1,62 @@
+Group	Type	Sources	HomeworkText	DueDate	Order	Template	Notes
+Mice	Descriptive Statistics	Lecture Notes	Answer to the following questions	1st of October 2012	1	Descriptive.doc	Easy homework
+			"Calculate the mean of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep="","")
+@"				
+			"Calculate the standard deviation of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep="","")
+@"				
+			"Data for the  variable nn are represented graphically. Determine (approximately) the mean and the standard deviation of the variable.\\ 
+\begin{tabular}{c}
+\resizebox{50mm}{!}{
+<<echo=false,fig=true>>=
+mu<-sample(c(-3,0,3), 1)
+sigma<-sample(c(1,2,4), 1)
+nn<-rnorm(500, mu, sigma)
+hist(nn, cex.axis=2, cex=2, cex.lab=2)
+@
+}
+\end{tabular}"				
+Ducks	Descriptive Statistics	Book	Answer to the following questions	8th of October 2012	2	Descriptive.doc	Same homework as Mice, with different numbers
+			"Calculate the mean of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep="","")
+@"				
+			"Calculate the standard deviation of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep="","")
+@"				
+			"Data for the  variable nn are represented graphically. Determine (approximately) the mean and the standard deviation of the variable.\\ 
+\begin{tabular}{c}
+\resizebox{50mm}{!}{
+<<echo=false,fig=true>>=
+mu<-sample(c(-3,0,3), 1)
+sigma<-sample(c(1,2,4), 1)
+nn<-rnorm(500, mu, sigma)
+hist(nn, cex.axis=2, cex=2)
+@
+}
+\end{tabular}"				
+YoungDucks	Probability	Lecture Notes	"<<results=tex, echo=false>>= 
+n<-round(runif(1, 4, 10),0)
+p<-round(runif(1, min=.1, max=.9), 1)
+@
+A genetically modified mouse does not survive the first month of life with probability \Sexpr{p} ."	15th of October 2012	3	Probability.doc	Young group of students
+			 We planned an experiment that included \Sexpr{n} mice. What is the probability that after a month not more than a mouse will survive?				
+			What is the expected number of mice still alive after the first month?				
+			"Is the animal represented in the picture a genetically modified mouse?
+\begin{tabular}{c}
+\resizebox{50mm}{!}{
+\includegraphics{yoyopdf}
+}
+\end{tabular}"				
