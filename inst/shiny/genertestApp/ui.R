@@ -24,7 +24,13 @@ shinyUI(pageWithSidebar(
     
     fileInput('file1', 'Choose the Tab delimited file containing the questions',
               accept=c('text/csv', 'text/comma-separated-values,text/plain')
-    ), #end fileInput
+    ), 
+    
+    
+    #upload a sample data set
+    ##actionButton("file1sample", "Upload a sample dataset"),
+    
+    #end fileInput
     #      tags$hr(),
     
     #options for fileInput
@@ -97,6 +103,13 @@ shinyUI(pageWithSidebar(
       
       
       
+      textInput("my.outdir", "Existing directory where you would like to store the results. (If left empty the results will be stored in a subdirectory of the shiny app)", value = ""),
+      
+      
+      fileInput('files.to.move', 'Additional files needed to generate the outputs (images, txt, ...)', multiple=TRUE#, 
+                #accept=""
+                #accept=c('text/csv', 'text/comma-separated-values,text/plain')
+      ),
       
       
       

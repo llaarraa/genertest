@@ -1,4 +1,4 @@
-g\name{dbStudents}
+\name{dbStudents}
 \alias{dbStudents}
 \docType{data}
 \title{Data set with students data used to generate homeworks}

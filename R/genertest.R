@@ -18,7 +18,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
                     topics=NULL, topics.points=NULL, tot.points=NULL, min.distance=0, generate.solutions="FALSE", 
                     my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", 
                     head.points="Number of points", head.prefix="MED", my.language="english", use.Sweave=TRUE, 
-                    compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL)
+                    compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL, names.files.to.move=NULL)
 {
   
   ##################################################
@@ -53,7 +53,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   #merge.pdf: logical, if set to true, the pdf files will be merged, valid only if compile.pdf=TRUE
   #my.final.sentence: a sentence, written in BOLD at the end of EACH test      
   #files.to.move: vector of strings indicating the (full path) name of the files that should be moved in the same directory as the exams, if not specified, all the files in dir.files.to.move are moved
-  
+  #names.files.to.move: vector with the names of the files to move
   
   ######################
   # supporting functions
@@ -815,12 +815,28 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   ################ moving the extra files needed to generate the exams ################
   
+  ################move the files needed, if specified ################
+  
+  
+  #save the initial working directory
+  my.oldwd<-getwd()
+  #add on.exit: RETURNS TO original dirctory if an error occurs      
+  on.exit(setwd(my.oldwd)	, add=T)
+  
+  
+  
+  
   if(!is.null(files.to.move)){
-     #moves the files
+    #moves the files
     file.copy(files.to.move, my.outdir)
-    }#end move the files
-  
-  
+    
+    #try, mostly added to deal with the file renaming caused by shiny, useful also to automatically change the names of the additional files, if needed....
+    if(!is.null(names.files.to.move)){
+      setwd(my.outdir)  
+      file.rename(basename(files.to.move), names.files.to.move)
+      setwd(my.oldwd) 
+    }
+  }#end move the files
   
   
   
@@ -828,11 +844,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   #compiling Sweave files 
   ################################
   
-  #save the initial working directory
-  my.oldwd<-getwd()
-  #add on.exit: RETURNS TO original dirctory if an error occurs			
-  on.exit(setwd(my.oldwd)	, add=T)
-  
+
   
   if(use.Sweave){
     #obtaing tex files from rnw files, Sweave must be accessible from the directory my.outdir

@@ -2,6 +2,8 @@ library(shiny)
 library(shinyIncubator)
 library(genertest)
 
+#cat(getwd(), "out out\n\n\n")
+
 # Define UI for miles per gallon application
 shinyUI(pageWithSidebar(
   
@@ -102,9 +104,13 @@ shinyUI(pageWithSidebar(
       
       
       
+      textInput("my.outdir", "Existing directory where you would like to store the results. (If left empty the results will be stored in a subdirectory of the shiny app)", value = ""),
       
       
-      
+      fileInput('files.to.move', 'Additional files needed to generate the outputs (images, txt, ...)', multiple=TRUE#, 
+                #accept=""
+                #accept=c('text/csv', 'text/comma-separated-values,text/plain')
+      ),
       
       
       #radioButtons("dist", "Distribution type:",

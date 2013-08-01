@@ -1,0 +1,60 @@
+\documentclass{article}
+\title{Medical Faculty - Undergraduates  - Exam of Biostatistics}
+\date{31.7.2013}
+\usepackage[english]{babel}
+\usepackage{enumerate}
+\usepackage[cm,empty]{fullpage}
+\usepackage[pdftex]{graphicx,color}
+\usepackage{Sweave}
+\begin{document}
+\maketitle{}
+\framebox{Name:\hspace{3cm}ID Number:\hspace{3cm}Points:\hspace{2cm}Exam152 }\begin{itemize}
+\item[1] {\small $\left[5\right]$ }Which of the following is a measure of central tendency?
+\begin{enumerate}[(a)]
+\item median 
+{\bf T }\item variance 
+{\bf F }\item mode 
+{\bf T }\item coefficient of correlation 
+{\bf F }\item frequency 
+{\bf F }\item range 
+{\bf F }\item standard deviation 
+{\bf F }\item mean 
+{\bf T }\end{enumerate}
+\item[2] {\small $\left[15\right]$ }A genetically modified mouse does not survive the first month of life with probability 0.40.  
+\begin{enumerate}[(a)]
+\item We planned an experiment that included 10 mice. What is the probability that after a month not more than a mouse will survive? 
+{\bf $X=1$ survive, $P(X=1)=p=.6, Y=sum(X), P(Y<=1)=P(Y=0)+P(Y=1)=(1-p)^10+10*p(1-p)^9$ -> $P(Y<=1)= 0.0017$ }\vspace{\baselineskip} \vspace{\baselineskip}\item What is the expected number of mice still alive after the first month? 
+{\bf $E(X)=pn -> E(X)=6$ }\vspace{\baselineskip}\end{enumerate}
+\item[3] {\small $\left[5\right]$ }The median value of the following data 33, 3, 7, 15, 107, 1, 41 is
+\begin{enumerate}[(a)]
+\item 29.6 
+{\bf F }\item cannot be calculated 
+{\bf F }\item 15 
+{\bf T }\item 16 
+{\bf F }\end{enumerate}
+\item[4] {\small $\left[10\right]$ }Calculate the mean of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep=",")
+@
+\begin{enumerate}[(a)]
+\item  \Sexpr{mean(x)}  
+{\bf T }\item \Sexpr{mean(x)+1}  
+{\bf F }\item does not exist 
+{\bf F }\item \Sexpr{median(x)}  
+{\bf F }\end{enumerate}
+\item[5] {\small $\left[15\right]$ }
+<<results=hide, echo=false>>=
+n<-sample(1:10, 1)
+succ<-sample(1:n, 1)
+@
+What is the probability of obtaining exactly \Sexpr{succ} tails if we toss a fair coin \Sexpr{n} times?
+{\bf 
+ 
+<<results=hide, echo=false>>=
+res<-round(pbinom(succ, n, 0.5), 4)
+@
+Number of trials: n=\Sexpr{n}, Number of successes=k=\Sexpr{succ},  probability of success: p=0.5. Using binomial distribution: $P(X=k|n,p)=$\Sexpr{res}. }\vspace{\baselineskip} \vspace{\baselineskip} \vspace{\baselineskip}\end{itemize}
+\newpage
+\end{document}

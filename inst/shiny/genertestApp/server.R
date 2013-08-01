@@ -158,9 +158,13 @@ shinyServer(function(input, output) {
             topics=names(table(dataset1()$Topic, exclude=c("","NA","end")))  
             }
       
+    #set to NULL the outdir if not provided by the user, otherwise use the path provided
+    if(input$my.outdir=="") {my.outdir=NULL} else my.outdir=input$my.outdir
+    
+    
     #browser()
     #if(input$start==TRUE){
-    g.out=genertest(input$file1$datapath, num.tests=input$num.tests,                             
+    g.out=genertest(input$file1$datapath, my.outdir=my.outdir, num.tests=input$num.tests,                           
                    repeat.each.test=input$repeat.each.test, my.seed=input$my.seed, 
                    topics=topics, topics.points=topics.points, 
                   #  topics.points=input$topics.points[,2], 
@@ -173,7 +177,7 @@ shinyServer(function(input, output) {
                    use.Sweave=input$use.Sweave, 
                    compile.pdf=input$compile.pdf,
                    my.final.sentence=input$my.final.sentence, merge.pdf=input$merge.pdf, 
-                   files.to.move=NULL)
+                    files.to.move=input$files.to.move$datapath, names.files.to.move=input$files.to.move$name)
     
     
       #Merge.pdf(genertest.output=g.out, outfile = "mergedFiles")

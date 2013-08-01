@@ -1,6 +1,8 @@
+#cat(getwd(), "out \n\n\n")
+
 shinyServer(function(input, output) {
   
-  
+  #cat(getwd(), "in \n\n\n")
   
   # values <- reactiveValues()
   #  if (interactive() == TRUE) {
@@ -125,7 +127,7 @@ shinyServer(function(input, output) {
     my.df[1,]= paste("Test", 1:input$num.tests)
     
     
-    matrixInput("QID", "Questions to include in each test (use the numbers that appear in the Questions.ID column of your questions database. You can add more questions using the + button, do not modify the first row of the matrix)", my.df)
+    matrixInput("QID", "Questions to include in each test (use the numbers that appear in the Questions.ID column of your questions database. You can add more questions using the + button, do not modify the header (first row) of the matrix)", my.df)
     
     # Create the checkboxes and do not select them all by default
     #checkboxGroupInput("topics", "Choose topics", 
@@ -152,7 +154,7 @@ shinyServer(function(input, output) {
   #browser()
   dat=reactive({
     
-    if(is.null(input$file1) | all(is.na(input$QID[-1,-1])))
+    if(is.null(input$file1) | all(is.na(input$QID[-1,])))
       return()
     
     # Get the data set with the appropriate name
@@ -166,9 +168,18 @@ shinyServer(function(input, output) {
     list.QID=list.QID[unlist(lapply(list.QID, function(x) length(x)>0))]
     
     
+    
+    #cat(input$my.outdir, "\n\n\n")
+    
+    #set to NULL the outdir if not provided by the user, otherwise use the path provided
+    if(input$my.outdir=="") {my.outdir=NULL} else my.outdir=input$my.outdir
+                            
+   
+    #cat(class(input$files.to.move), "files to move \n\n\n")
+    
     #browser()
     #if(input$start==TRUE){
-    g.out=genertestPreSelect(input$file1$datapath, my.outdir=NULL,
+    g.out=genertestPreSelect(input$file1$datapath, my.outdir=my.outdir, #my.outdir=NULL, #getwd(),
                              #list.QID=list(c(1,2,3), c(2,3,4), c(3,4,5)), ### temp
                              list.QID=list.QID, 
                              num.tests=input$num.tests,   
@@ -184,7 +195,7 @@ shinyServer(function(input, output) {
                    compile.pdf=input$compile.pdf,
                    merge.pdf=input$merge.pdf, 
                    my.final.sentence=input$my.final.sentence, 
-                   files.to.move=NULL)
+                   files.to.move=input$files.to.move$datapath, names.files.to.move=input$files.to.move$name)
     
   
     

@@ -181,6 +181,11 @@ shinyServer(function(input, output) {
     if(is.null(input$file1) | is.null(input$file2) )
       return()
     
+    
+    #set to NULL the outdir if not provided by the user, otherwise use the path provided
+    if(input$my.outdir=="") {my.outdir=NULL} else my.outdir=input$my.outdir
+    
+    
     # Get the data set with the appropriate name
     #dat1 <- get(input$file1)
     #dat1=read.csv(input$file1$datapath, header=TRUE, sep="\t")
@@ -190,7 +195,7 @@ shinyServer(function(input, output) {
        
    # browser()
     #if(input$start==TRUE){
-    g.out=generateHomeworks(input$file1$datapath, input$file2$datapath, my.outdir=NULL,
+    g.out=generateHomeworks(input$file1$datapath, input$file2$datapath, my.outdir=my.outdir,
                             my.seed=input$my.seed, 
                    #topics=topics, topics.points=topics.points, 
                    # tot.points=input$tot.points, 

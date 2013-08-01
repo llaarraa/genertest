@@ -150,6 +150,8 @@ shinyUI(pageWithSidebar(
                     value = TRUE),#,
       
       
+      textInput("my.outdir", "Existing directory where you would like to store the results. (If left empty the results will be stored in a subdirectory of the shiny app)", value = ""),
+      
       
       fileInput('files.to.move', 'Additional files needed to generate the outputs (images, txt, ...)', multiple=TRUE#, 
                 #accept=""

@@ -8,7 +8,7 @@ genertestPreSelect(my.db.name, my.outdir, list.QID, num.tests=NULL,
                             repeat.each.test=1, my.seed=1999, 
                             generate.solutions=FALSE, my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", 
                             head.points="Number of points", head.prefix="MED", my.language="english", 
-                            use.Sweave=TRUE, compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL)
+                            use.Sweave=TRUE, compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL, names.files.to.move=NULL)
  
 }
 \arguments{
@@ -32,7 +32,8 @@ genertestPreSelect(my.db.name, my.outdir, list.QID, num.tests=NULL,
    \item{merge.pdf}{Indicator of whether the *.pdf files should be merged in a single PDF file, valid only if compile.pdf=TRUE}
   \item{my.final.sentence}{A string with a sentence that will be written in bold at the end of each exam. If set to NULL (default) no sentence will be displayed.}
      \item{files.to.move}{Vector of strings indicating the (full path) name of the files that should be moved in the same directory as the exams, if not specified, all the files in dir.files.to.move are moved.}
-
+\item{names.files.to.move}{Vector of strings indicating the name of the files.to.move files, as it should appear in the final version. This parameter is useful only if the files passed through the files.to.move argument should be renamed (as in the shinyApp). Ignore otherwise.}
+ 
   
 }
 \details{

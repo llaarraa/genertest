@@ -11,7 +11,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
                             repeat.each.test=1, my.seed=1999, 
                             generate.solutions=FALSE, my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", 
                             head.points="Number of points", head.prefix="MED", my.language="english", 
-                            use.Sweave=TRUE, compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL){
+                            use.Sweave=TRUE, compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL, names.files.to.move=NULL){
    
     #on.exit: close open connections, if any
    	on.exit(if(sink.number()!=0) for(i in 1:sink.number()) sink())
@@ -54,6 +54,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
     #compile.pdf: logical, if set to true, pdf files will be generated, otherwise only tex files 		this part of the program will work only if the user has pdflatex.exe (MikTeX) on its computer and the program is accessible from any directory (in Windows, included in the path)
 	  #my.final.sentence: string with a sentence to be written (in bold) at the end of each test
     #files.to.move: files to move to the outdir 
+     #names.files.to.move: names of the files to move, if it is necessary to rename them
     ######################
     # supporting functions
     #######################
@@ -542,14 +543,29 @@ for(i in 1:length(index.questions.vector)){
    	#######################
    	
    	
-   	################ moving the extra files needed to generate the exams ################
+   	################move the files needed, if specified ################
+   	
+   	
+   	#save the initial working directory
+   	my.oldwd<-getwd()
+   	#add on.exit: RETURNS TO original dirctory if an error occurs      
+   	on.exit(setwd(my.oldwd)	, add=T)
+   	
+   	
+   	
    	
    	if(!is.null(files.to.move)){
    	  #moves the files
    	  file.copy(files.to.move, my.outdir)
+   	  
+   	  #try, mostly added to deal with the file renaming caused by shiny, useful also to automatically change the names of the additional files, if needed....
+   	  if(!is.null(names.files.to.move)){
+   	    setwd(my.outdir)  
+   	    file.rename(basename(files.to.move), names.files.to.move)
+   	    setwd(my.oldwd) 
+   	  }
    	}#end move the files
    	
-     
      
 	################################
 	#compiling Sweave files 
@@ -559,7 +575,7 @@ for(i in 1:length(index.questions.vector)){
 	 if(use.Sweave){
 		#obtaing tex files from rnw files, Sweave must be accessible from the directory my.outdir
 		#my.files<-dir(path=my.outdir, pattern=".rnw", full.names=TRUE)   
-		my.oldwd<-getwd()
+		#my.oldwd<-getwd()
 		setwd(my.outdir)
 				
 		#for reproducibility of the solutions, save the seed

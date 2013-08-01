@@ -412,7 +412,7 @@ generateHomeworks=function(my.db.homeworks.name, my.db.students.name,  my.outdir
         #moves the files
         file.copy(files.to.move, my.outdir)
         
-        #try....
+        #try, mostly added to deal with the file renaming caused by shiny, useful also to automatically change the names of the additional files, if needed....
         if(!is.null(names.files.to.move)){
         setwd(my.outdir)  
         file.rename(basename(files.to.move), names.files.to.move)
