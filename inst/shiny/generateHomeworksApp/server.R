@@ -203,7 +203,7 @@ shinyServer(function(input, output) {
                    generate.solutions=input$generate.solutions, 
                    my.title=input$my.title, my.date=input$my.date, 
                             source.text=input$source.text,
-                            date.text=input$date.text,
+                            date.text=input$date.text, template.text=input$template.text,
                             
                             group.members.text=input$group.members.text,
                             

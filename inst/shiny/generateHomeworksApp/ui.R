@@ -11,7 +11,7 @@ shinyUI(pageWithSidebar(
   headerPanel("shiny for generateHomeworks"),
   
   sidebarPanel(
-    
+    7
     #input of csv file
     
     #if (interactive() == TRUE) {
@@ -112,7 +112,7 @@ shinyUI(pageWithSidebar(
       
       textInput("date.text", "Due date", value = "Due date"),
       
-      textInput("group.member.text", "Group members", value = "Group members"),
+      textInput("group.members.text", "Group members", value = "Group members"),
   
       textInput("text.groupdata", "Data about the group", value = "Data about the group"),
       
