@@ -2,20 +2,21 @@
 \alias{generateHomeworks}
 \title{Function that generates personalized (group) homeworks}
 \description{ This function generates homeworks with assignments drawn from a tab-delimited database. The assignments can be generated using Sweave code. The output is a LaTeX or PDF file for each of the tests.}
-\usage{generateHomeworks(my.db.homeworks.name, my.db.students.name,  my.outdir=NULL,  my.seed=1999, generate.solutions="FALSE", 
-        my.title="Homework - Biostatistics", my.date="Academic Year 2012/2013", 
-  			list.id.homeworks=list(id.group=NULL, id.type=NULL, id.source=NULL, id.text=NULL, id.date=NULL, id.template=NULL, id.order.fileAll=NULL),
-				list.id.students=list(id.group.names=NULL, id.students.names=NULL),
-				source.text="Sources",
-				template.text="Template to use",
-				date.text="Due date",
-				group.members.text="Group members",
-        text.groupdata="Data about the group",
-        text.assignment="Assignment",
-  	
-				my.language="english", use.Sweave=FALSE, 
-        compile.pdf=TRUE,
-        my.final.sentence=NULL)
+\usage{generateHomeworks(my.db.homeworks.name, my.db.students.name,  my.outdir=NULL,  my.seed=1999, 
+                    generate.solutions="FALSE", 
+                    my.title="Homework - Biostatistics", my.date="Academic Year 2012/2013", 
+            				list.id.homeworks=list(id.group=NULL, id.type=NULL, 
+                    id.source=NULL, id.text=NULL, id.date=NULL, id.template=NULL, id.order.fileAll=NULL, id.answers=NULL),
+          					list.id.students=list(id.group.names=NULL, id.students.names=NULL),
+          					source.text="Sources",
+          					template.text="Template to use",
+          					date.text="Due date",
+          					group.members.text="Group members",
+               text.groupdata="Data about the group",
+               text.assignment="Assignment",
+          					my.language="english", use.Sweave=TRUE,
+               compile.pdf=TRUE,
+               my.final.sentence=NULL, files.to.move=NULL, names.files.to.move=NULL) 
 
 
 }
@@ -40,16 +41,18 @@
 \item{text.groupdata}{Header displayed for the group information, default is "Data about the group"}
 \item{text.assignment}{Header diplayed for the assignment, default is "Assignment"}
 \item{my.language}{String indicating the language in which the test is written - it is used to call a LaTeX Babel package that contains the appropriate language settings (a call to the Babel package will be included in the header of the *.tex files)}
-  \item{use.Sweave}{Indicator of whether in the database there are some exercises written using Sweave code; default is FALSE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details }
+  \item{use.Sweave}{Indicator of whether in the database there are some exercises written using Sweave code; default is TRUE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details }
   \item{compile.pdf}{Indicator of whether the *.tex files should be compiled to *.pdf files (compiled if set to TRUE.) See details}
   \item{my.final.sentence}{A string with a sentence that will be written in bold at the end of each homeworks. If set to NULL (default) no sentence will be displayed.}
+     \item{files.to.move}{Vector of strings indicating the (full path) name of the files that should be moved in the same directory as the exams.}
+     \item{names.files.to.move}{Vector of strings indicating the name of the files.to.move files, as it should appear in the final version. This parameter is useful only if the files passed through the files.to.move argument should be renamed (as in the shinyApp). Ignore otherwise.}
   
 }
 \details{
-The homework data base must a tab delimited file, prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Group, Type, HomeworkText, DueDate, Template, Order) other variables can be included. See \code{\link{my.data.homeworks}} for more details. 
+The homework data base must a tab delimited file, prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Group, Type, Question, DueDate, Template, Order) other variables can be included. See \code{\link{dbHomeworks}} for more details. 
 If the mandatory variables have different names, the order of the columns in which they appear can be specified using the list.id.homeworks argument. 
 
-The students data base must a tab delimited file, prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Group, Name) other variables can be included. See \code{\link{my.data.students}} for more details. 
+The students data base must a tab delimited file, prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Group, Name) other variables can be included. See \code{\link{dbStudents}} for more details. 
 If the mandatory variables have different names, the order of the columns in which they appear can be specified using the list.id.students argument. 
 
 If use.Sweave=TRUE,   a call to the Sweave package will be included in the header of the *.rnw and *.tex files. For this reason Sweave package must be available to LaTeX compiler. File Sweave.sty can be included in the directory my.outdir in case of problems related to package unavailability. 
@@ -60,6 +63,9 @@ If the user wishes to use a different program to compile the LaTeX files, set co
 Writes LaTeX (od PDF) files containing the texts of the exams and returns a list containing the IDs of the questions selected for each test and the list of the files *.tex files that were generated. It also merges the homeworks in a single PDF file.
 
   \item{files}{List of the generated files (*.tex or *.pdf, depending on the selected options)}
+   \item{names.files}{Names the generated files (*.tex or *.pdf, depending on the selected options)}
+   \item{dir.files}{Path where the generated files are stored}
+
   \item{errors}{A string with the errors encountered during the execution of the function, if any.)}
 }
 \references{\url{http://sites.google.com/site/lara3107/Home/software/genertest}, \url{https://github.com/llaarraa/genertest}}
@@ -75,24 +81,29 @@ my.db.students.name=paste(path.package("genertest"),"/extdata/StudentList.txt",s
 
 
 
-TMP=generateHomeworks(my.db.homeworks.name, my.db.students.name,  my.outdir=NULL,  my.seed=1999, 
-                    generate.solutions="FALSE", 
-                    my.title="Homework - Biostatistics", my.date="Academic Year 2012/2013", 
-  				list.id.homeworks=list(id.group=NULL, id.type=NULL, id.source=NULL, id.text=NULL, id.date=NULL, id.template=NULL, id.order.fileAll=NULL),
-					list.id.students=list(id.group.names=NULL, id.students.names=NULL),
-					source.text="Sources",
-					template.text="Template to use",
-					date.text="Due date",
-					group.members.text="Group members",
-					my.language="english", use.Sweave=TRUE, 
-                    compile.pdf=TRUE,
-                    my.final.sentence=NULL) 
-					
+#list the pdf files stored in the extdata directory of the package
+files.to.move=dir(file.path(path.package("genertest"),"extdata/"), pattern="*.pdf", full.names=TRUE)
+
+res.homeworks=generateHomeworks(my.db.homeworks.name, my.db.students.name, files.to.move=files.to.move)
+                    
 	
+  
+       
+#same results, but using the R data.frames
+data(dbHomeworks)
+data(dbStudents)
+
+res.homeworks2=generateHomeworks(dbHomeworks, dbStudents, files.to.move=files.to.move)
+
+
+  			       
+       
+            
+            
 
 
 
 
 }
-\seealso{\code{\link{write.all}}, \code{\link{my.data}}}
+\seealso{\code{\link{write.all}}, \code{\link{dbHomeworks}}}
 \keyword{misc}

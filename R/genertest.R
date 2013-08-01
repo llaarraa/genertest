@@ -11,13 +11,14 @@
             #updated: July 2013, replaces the system call with
             #texi2dvi(my.file, pdf=TRUE, clean=TRUE)
 #           : the outdir can be left empty. If set to NULL a subdirectory named with the date/time of creation is created in the working directory and the results are stored there. 
+#           : possibility to pass the database as an R object - not read from a tab delimited text
 
 
 genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1, my.seed=1999, 
                     topics=NULL, topics.points=NULL, tot.points=NULL, min.distance=0, generate.solutions="FALSE", 
-                    my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", head.points="Number of points", head.prefix="MED", my.language="english", use.Sweave=FALSE, 
-                    compile.pdf=TRUE,
-                    my.final.sentence=NULL)
+                    my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", 
+                    head.points="Number of points", head.prefix="MED", my.language="english", use.Sweave=TRUE, 
+                    compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL)
 {
   
   ##################################################
@@ -49,7 +50,11 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   #my.language: language in which the test is writted - to be used to calls a LaTeX library that contains the appropriate language settings
   #use.Sweave: are some exercises written using Sweave code (default is FALSE)
   #compile.pdf: logical, if set to true, pdf files will be generated, otherwise only tex files 		this part of the program will work only if the user has pdflatex.exe (MikTeX) on its computer and the program is accessible from any directory (in Windows, included in the path)
+  #merge.pdf: logical, if set to true, the pdf files will be merged, valid only if compile.pdf=TRUE
   #my.final.sentence: a sentence, written in BOLD at the end of EACH test      
+  #files.to.move: vector of strings indicating the (full path) name of the files that should be moved in the same directory as the exams, if not specified, all the files in dir.files.to.move are moved
+  
+  
   ######################
   # supporting functions
   #######################
@@ -58,7 +63,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
     if(length(x) <= 1) { if(!missing(size) && size == 0) x[FALSE] else x
     } else sample(x, size, ...)
   
-  my.error<<-"No errors were found" 	
+  my.error<-"No errors were found" 	
   
   
   ###################### ######  ####
@@ -72,10 +77,26 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   #my.data=my.db.name
   
-  #modified to read data from a character string
-  my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
-  if(class(my.data)=="try-error") {my.error<<-"I cannot open the file containing the questions"
-                                   stop("I cannot open the file containing the questions")} 
+  
+  #added July 2013, can use R data.frames as input
+  
+  if(class(my.db.name)!="character" & class(my.db.name)!="data.frame") {
+    my.error<-"my.db.name should be a string with the path to a tab delimited file or an R data.frame"
+    stop("my.db.name should be a string with the path to a tab delimited file or an R data.frame")
+    
+  }
+  
+  
+  if(class(my.db.name)=="character"){
+  
+          #modified to read data from a character string
+          my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
+          if(class(my.data)=="try-error") {my.error<-"I cannot open the file containing the questions"
+                                           stop("I cannot open the file containing the questions")} 
+  
+     } else my.data=my.db.name
+  
+  
   
   
   ###################################################
@@ -93,12 +114,12 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
                           #define the names of the directory where the files will be stored, creates a subdirectory of the working directoty 
                           
                           my.oldwd<-getwd()
-                          my.outdir=paste(my.oldwd, paste("Exams",format(Sys.Date(), "%b%d%Y"), format(Sys.time(), "%H%M"), sep=""), sep="/")
+                          my.outdir=file.path(my.oldwd, paste("Exams",format(Sys.Date(), "%b%d%y"), format(Sys.time(), "%H%M%S"), sep=""))
                           
                           my.command=paste("mkdir", my.outdir)
                           system(my.command)
                         } else {
-                          if(is.na(file.info(my.outdir)$isdir)) {my.error<<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
+                          if(is.na(file.info(my.outdir)$isdir)) {my.error<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
                           stop("The directory that you choose to store the results does not exist. Please specify an existing directory of leave the my.outdir argument empty. A directory named Exams + the current date and time will be created in your working directory.")}
                         }
   
@@ -107,11 +128,14 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   
   #######added 18/10, additional controls on the paramteres passed by the user
-  if(min.distance<0)   {my.error<<-"The minimum distance cannot be negative"
+  if(min.distance<0)   {my.error<-"The minimum distance cannot be negative"
                         stop("The directory that you choose to store the results does not exist")} 
-  if(num.tests<0)   {my.error<<-"The number of tests cannot be negative"
+  if(num.tests<0)   {my.error<-"The number of tests cannot be negative"
                      stop("The directory that you choose to store the results does not exist")} 
   ####################################################################################
+  
+  
+  
   
   ######################
   #initialize objects needed later
@@ -133,8 +157,8 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   
   #check if there is a variable called Question.ID in the database of questions, if not stop
-  if(is.null(my.data$Question.ID)) {my.error<<-"You need to include a column called Question.ID or Question ID in the database of questions" 
-                                    stop("You need to include a column called Question.ID is the database of questions")}
+  if(is.null(my.data$Question.ID)) {my.error<-"You need to include a column called Question.ID or Question ID in the database of questions" 
+                                    stop("You need to include a column called Question.ID in the database of questions")}
   
   #indicator of which lines in the database contain the beginning of a question - and the info about the
   #row-ID of the database of questions (and not QUESTION.ID!), moved up 18/2/2010
@@ -142,8 +166,9 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   #modified 18/2/2010: checking if all Questions.IDs are different
   if(sum(duplicated(my.data$Question.ID[which.questions]))>0) {
-    which.duplicated.QID<<-my.data$Question.ID[which.questions][which(duplicated(my.data$Question.ID[which.questions]))]
-    my.error<<-as.character(c("Question.ID must be unique for each question. Questions that have repeated IDs are:", as.character(which.duplicated.QID))) 
+    #which.duplicated.QID<<-my.data$Question.ID[which.questions][which(duplicated(my.data$Question.ID[which.questions]))]
+	which.duplicated.QID=my.data$Question.ID[which.questions][which(duplicated(my.data$Question.ID[which.questions]))]
+    my.error<-as.character(c("Question.ID must be unique for each question. Questions that have repeated IDs are:", as.character(which.duplicated.QID))) 
     stop("Question.ID must be unique for each question")}
   
   ###-as.character(c("Some of the questions that you selected are not present in the database of questions (Question ID does not match)\n Missing questions are: ", as.character(unique.not.matched)))
@@ -152,11 +177,11 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   
   #check if there is a column called Points in the database of questions, if not stop 
-  if(is.null(my.data$Points)) { my.error<<-"You need to include a column called Points is the database of questions"
+  if(is.null(my.data$Points)) { my.error<-"You need to include a column called Points is the database of questions"
                                 stop("You need to include a column called Points is the database of questions")} 
   
   #check if there is a column called Points in the database of questions, if not stop 
-  if(is.null(my.data$Question)) {my.error<<-"You need to include a column called Question is the database of questions"
+  if(is.null(my.data$Question)) {my.error<-"You need to include a column called Question is the database of questions"
                                  stop("You need to include a column called Question is the database of questions")}
   
   
@@ -186,7 +211,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   
   #check if the Points were specified for each question in the database of questions, if not stop 
-  if(any(is.na(my.data$Points[which.questions]))) {my.error<<-"You need to specify the number of points for each of the question included in the database" 
+  if(any(is.na(my.data$Points[which.questions]))) {my.error<-"You need to specify the number of points for each of the question included in the database" 
                                                    stop("You need to specify the number of points for each of the question included in the database")}
   
   
@@ -308,13 +333,13 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
       #could be improved for partial matching, here only exact matching works fine
       topics<-toupper(topics)
       
-      if(any(!is.element(topics, data.Topic[which.questions]))){my.error<<-"Some or all the topics that you specified are not included in your database"
+      if(any(!is.element(topics, data.Topic[which.questions]))){my.error<-"Some or all the topics that you specified are not included in your database"
                                                                 stop("Some or all the topics that you specified are not included in your database") }
       
       #checks if the number of points for each topic were specified
       ###the last condition could be removed, if it is not necessary that the sum is 100
       ###if(is.null(topics.points) | length(topics.points)!=length(topics) | sum(topics.points)!=100), removed the requirement that the sum is 100
-      if(is.null(topics.points) | length(topics.points)!=length(topics)){ my.error<<-"Specify the number of points that you want to include for each of the selected topics"
+      if(is.null(topics.points) | length(topics.points)!=length(topics)){ my.error<-"Specify the number of points that you want to include for each of the selected topics"
                                                                           stop("Specify the number of points that you want to include for each of the selected topics")}
       
       #initialize the list that will contain the row-ID of the selected questions for each topic
@@ -335,7 +360,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
         #check if there are any questions that can be used for this topic
         if(length(which.questions.per.topic)==0 | sum(my.data$Points[which.questions.per.topic])<topics.points[i] | min(my.data$Points[which.questions.per.topic])>topics.points[i]){
           cat("A problem was encountered for topic: ", topics[i], "\n")
-          my.error<<-paste("There are not enough questions for topic ", topics[i], "to meet the requirements on the number of points that were specified")
+          my.error<-paste("There are not enough questions for topic ", topics[i], "to meet the requirements on the number of points that were specified")
           stop("There are not enough questions for this topic to meet the requirements on the number of points that were         specified")
         }
         
@@ -345,7 +370,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
           #if an error is found reset - up to 100 times -> to give a second chance to situations in which an incompatible value is selected early and this selection cannot be corrected, an algorithm that finds the optimal combination of questions was not implemented
           if(length(which.questions.per.topic)==0 & num.errors>100) {
             cat("A problem was encountered for topic: ", topics[i], "\n")
-            my.error<<-paste("There are not enough questions for topic ", topics[i], "to meet the requirements on the number of points that were specified")
+            my.error<-paste("There are not enough questions for topic ", topics[i], "to meet the requirements on the number of points that were specified")
             stop("There are not enough questions for this topic to meet the requirements on the number of points that were         specified.")
           } #end if
           
@@ -393,7 +418,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
     
     #no topics were specified, proceed using all the questions
     else if(is.null(topics)) {
-      if(is.null(tot.points)) { my.error<<-"You need to specify the total number of points to include in the exam"
+      if(is.null(tot.points)) { my.error<-"You need to specify the total number of points to include in the exam"
                                 stop("You need to specify the total number of points to include in the exam (using tot.points variable)")}
       
       #list that will contain the row-ID of the selected questions
@@ -413,7 +438,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
       )   
       #check if there are any questions that can be used for this topic
       if(length(which.questions.per.topic)==0 | sum(my.data$Points[which.questions.per.topic])<tot.points | min(my.data$Points[which.questions.per.topic])>tot.points){
-        my.error<<-"There are not enough questions in your questions database to select enough questions using the criteria that were specified. Check the consistency of the required total number of points with the points for each question included in the database."
+        my.error<-"There are not enough questions in your questions database to select enough questions using the criteria that were specified. Check the consistency of the required total number of points with the points for each question included in the database."
         stop("There are not enough questions in your questions database to select enough questions using the criteria that were specified. Check the consistency of the required total number of points with the points for each question included in the database.")
       }
       
@@ -433,7 +458,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
         } #end if
         
         if(length(which.questions.per.topic)==0 & num.errors>100) {
-          my.error<<-"There are not enough questions in your questions database to select enough questions using the criteria that were specified."
+          my.error<-"There are not enough questions in your questions database to select enough questions using the criteria that were specified."
           stop("There are not enough questions in your questions database to select enough questions using the criteria that were specified.")
         }
         
@@ -511,7 +536,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
     #############################################
     
     #generating the name of the file with the exams
-    if(use.Sweave)     zz<-paste(my.outdir, "\\", my.prefix, tt, ".rnw", sep="") else     zz<-paste(my.outdir, "\\", my.prefix, tt, ".tex", sep="")
+    if(use.Sweave)     zz<-file.path(my.outdir, paste(my.prefix, tt, ".rnw", sep="")) else     zz<-file.path(my.outdir,  paste(my.prefix, tt, ".tex", sep=""))
     #saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
     #tests 
     my.filenames[tt]<-zz
@@ -530,7 +555,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
                                    warning("You did not include a column with the answers in the database of questions - it must be called: Answer")	
       }
       #generate the name of the file with the answers
-      if(use.Sweave) zz.sol<-paste(my.outdir, "\\",  my.prefix,  tt, "sol",  ".rnw", sep="") else zz.sol<-paste(my.outdir, "\\",  my.prefix,  tt, "sol",  ".tex", sep="")
+      if(use.Sweave) zz.sol<-file.path(my.outdir, paste(my.prefix,  tt, "sol",  ".rnw", sep=""))  else zz.sol<-file.path(my.outdir, paste(my.prefix,  tt, "sol",  ".tex", sep=""))
       
       #saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
       #solutions 
@@ -670,7 +695,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
         #############################################################
         # beginning of writing of the file with the questions #######
         ##############################################################
-        if(use.Sweave) zz<-paste(my.outdir, "\\", my.prefix, pp, tt, ".rnw", sep="") else zz<-paste(my.outdir, "\\", my.prefix, pp, tt, ".tex", sep="")
+        if(use.Sweave) zz<-file.path(my.outdir, paste(my.prefix, pp, tt, ".rnw", sep="")) else zz<-file.path(my.outdir, paste(my.prefix, pp, tt, ".tex", sep=""))
         
         #saving the name of the file
         my.filenames[num.tests+repeat.each.test*(tt-1)+pp]<-zz
@@ -679,7 +704,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
         if(generate.solutions) {
           
           #generate the name of the file with the answers
-          if(use.Sweave) zz.sol<-paste(my.outdir, "\\",  my.prefix,  pp, tt, "sol",  ".rnw", sep="") else zz.sol<-paste(my.outdir, "\\",  my.prefix,  pp, tt, "sol",  ".tex", sep="")
+          if(use.Sweave) zz.sol<-file.path(my.outdir, paste(my.prefix,  pp, tt, "sol",  ".rnw", sep="")) else zz.sol<-file.path(my.outdir, paste(my.prefix,  pp, tt, "sol",  ".tex", sep="")) 
           
           #saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
           #solutions 
@@ -781,6 +806,24 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   #cat(my.filenames)
   #cat(my.filenames.sol)
   
+  
+  
+  #######################
+  # move the files
+  #######################
+  
+  
+  ################ moving the extra files needed to generate the exams ################
+  
+  if(!is.null(files.to.move)){
+     #moves the files
+    file.copy(files.to.move, my.outdir)
+    }#end move the files
+  
+  
+  
+  
+  
   ################################
   #compiling Sweave files 
   ################################
@@ -851,10 +894,21 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
     #if(generate.solutions) my.files<-c(my.filenames, my.filenames.sol) else my.files<-my.filenames
     
     for(i in 1:length(my.files)){
-      my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
-      my.file<-unlist(strsplit(my.file,  "\\\\"))
-      #extract just the name of the file, without using the patj
-      my.file<-my.file[length(my.file)]
+      #my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
+      #my.file<-unlist(strsplit(my.file,  "\\\\"))
+      ##extract just the name of the file, without using the path
+      #my.file<-my.file[length(my.file)]
+      
+      #extract just the name of the file, without using the path and use the tex files only
+      my.file=paste(unlist(strsplit(basename(my.files[i]), "\\."))[[1]], ".tex", sep="")
+      
+     # cat(my.file, "transf file\n")
+    #  cat(my.files[i], "OF file\n")
+    #  cat(my.outdir, "OD\n")
+      
+      #my.file=basename(my.files[i])
+      #cat(my.file, "\n")
+      
       
       ##my.command<-paste("pdflatex", my.file)
       #run pdflatex, and check if there were errors, stop the function in case of errors
@@ -867,7 +921,7 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
       if(!is.null(out.pdflatex))         {
         #return to the original directory
         setwd(my.oldwd)
-        my.error<<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
+        my.error<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
         stop("There was an error compiling the LaTeX file(s)")
         
       }# end out.pdflatex, error in pdf compilation
@@ -877,9 +931,9 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   
   
   #saving the names of the final output files, tex or pdf, depending on the selected options
-  for(i in 1:length(my.files)){
-    if(compile.pdf) my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".pdf", sep="")	else my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")
-  }	
+  #for(i in 1:length(my.files)){
+  #  if(compile.pdf) my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".pdf", sep="")	else my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")
+  #}	
   
   #outputting questions ID instead of row number
   Remember.questions.index<-lapply(Remember.questions.index, function(x) my.data$Question.ID[x])
@@ -890,12 +944,58 @@ genertest<-function(my.db.name, my.outdir=NULL,  num.tests=1, repeat.each.test=1
   #return to starting directory
   ####   setwd(my.oldwd)	moved up the on.exit()
   # }  #end on.exit
-  return(list(Questions=Remember.questions.index, files=my.files, errors=my.error))       
+  
+  
+
+  ################ save separately the name of the files and the directory where they are stored
+  
+  cat("\n\n\n\n", my.files, "names of the files \n\n\n\n")
+  names.files=basename(my.files)
+  
+  for(i in 1:length(names.files)){
+    if(compile.pdf) names.files[i]=paste(unlist(strsplit(basename(names.files[i]), "\\."))[[1]], ".pdf", sep="") else 
+      names.files[i]=paste(unlist(strsplit(basename(names.files[i]), "\\."))[[1]], ".tex", sep="")}
+  
+  
+  
+  dir.files=dirname(my.files)[1]
+  
+  #cat("\n\n\n\n", names.files, "names of the files \n\n\n\n")
+  #cat("\n\n\n\n", dir.files, "names of the files \n\n\n\n")
+  
+  if(compile.pdf==TRUE & merge.pdf==TRUE) Merge.pdf(my.files=names.files, my.dir=dir.files, outfile="MergedFiles")
+  
+  
+  #if(compile.pdf==TRUE){
+  #  #names of the files, without the path
+  #  names.files=unlist(lapply(strsplit(unlist(lapply(strsplit(my.files, "\\."), 
+  #                                                                       function(x) paste(x[1], ".pdf", sep=""))), "\\\\"), function(x) x[length(x)]))
+  #  #path only
+  #  dir.files=unlist(lapply(strsplit(unlist(lapply(strsplit(my.files, "\\."), 
+  #                                                 function(x) paste(x[1], ".pdf", sep=""))), "\\\\"), function(x) x[-length(x)]))[1]
+  #} else {
+  #  #names of the files, without the path
+  #  names.files=unlist(lapply(strsplit(unlist(lapply(strsplit(my.files, "\\."), 
+  #                                                   function(x) paste(x[1], ".tex", sep=""))), "\\\\"), function(x) x[length(x)]))
+  #  #path only
+  #  dir.files=unlist(lapply(strsplit(unlist(lapply(strsplit(my.files, "\\."), 
+  #                                                 function(x) paste(x[1], ".tex", sep=""))), "\\\\"), function(x) x[-length(x)]))[1]
+      
+  #  }
+  
+  
+  
+  my.files=file.path(dir.files, names.files)
+  
+  merged.file=ifelse(compile.pdf==TRUE & merge.pdf==TRUE, file.path(dir.files, "MergedFiles.pdf"), "Merging of the PDF files not requested")
+  
+  return(list(Questions=Remember.questions.index, files=my.files, names.files=names.files, dir.files=dir.files,  merged.file=merged.file, errors=my.error))       
 }#end function genertest()   
 
 ####################################################################
 ################end genertest() ####################################
 ####################################################################
+
 
 
 

@@ -1,2 +1,13 @@
+#exportPattern("^[^\\.]")
 export(genertest)
+export(genertestPreSelect)
+export(generateHomeworks)
 export(write.all)
+export(Merge.pdf)
+#importFrom(tools,texi2dvi)
+#Import(tools::texi2dvi)
+
+
+
+
+

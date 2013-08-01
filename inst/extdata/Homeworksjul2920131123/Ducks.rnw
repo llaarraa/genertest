@@ -1,0 +1,40 @@
+\documentclass{article}
+\title{Homework - Biostatistics \bf{ Ducks }}
+\date{Academic Year 2012/2013}
+\usepackage[english]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{hyperref}
+\usepackage{enumerate}
+\usepackage[cm,empty]{fullpage}
+\usepackage[pdftex]{graphicx,color}
+\usepackage{Sweave}
+\begin{document}
+\maketitle{}
+\section{ Data about the group }{\bf Group members : }Donald Duck, Daisy Duck, Scrooge McDuck, Gladstone Gander, Elvira Grandma Duck Coot\\{\bf Due date : 8th of October 2012 }\\{\bf Sources : }Book\\{\bf Template to use : Descriptive.doc }\\\section{ Assignment }Answer to the following questions \\\begin{itemize}
+\item Calculate the mean of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep=",")
+@ 
+\item Calculate the standard deviation of the following data:  
+<<results=tex, echo=false>>=
+x<-rnorm(4,2,6)
+x<-round(x)
+cat(x, sep=",")
+@
+ 
+\item Data for the  variable nn are represented graphically. Determine (approximately) the mean and the standard deviation of the variable.\\ 
+\begin{tabular}{c}
+\resizebox{50mm}{!}{
+<<echo=false,fig=true>>=
+mu<-sample(c(-3,0,3), 1)
+sigma<-sample(c(1,2,4), 1)
+nn<-rnorm(500, mu, sigma)
+hist(nn, cex.axis=2, cex=2)
+@
+}
+\end{tabular} 
+\end{itemize}
+\vspace{\baselineskip} {\bf  }\newpage
+\end{document}

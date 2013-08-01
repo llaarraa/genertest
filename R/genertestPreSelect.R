@@ -11,11 +11,13 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
                             repeat.each.test=1, my.seed=1999, 
                             generate.solutions=FALSE, my.title="Exam", my.date="Today", my.prefix="exam",     head.name="Name", head.id="ID number", 
                             head.points="Number of points", head.prefix="MED", my.language="english", 
-                            use.Sweave=FALSE, compile.pdf=FALSE, my.final.sentence=NULL){
+                            use.Sweave=TRUE, compile.pdf=TRUE, merge.pdf=TRUE, my.final.sentence=NULL, files.to.move=NULL){
    
     #on.exit: close open connections, if any
    	on.exit(if(sink.number()!=0) for(i in 1:sink.number()) sink())
 
+     
+      	
    
     ##################################################
     ##############FUNCTION ARGUMENTS##################
@@ -51,6 +53,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
     #use.Sweave: are some exercises written using Sweave code (default is FALSE)
     #compile.pdf: logical, if set to true, pdf files will be generated, otherwise only tex files 		this part of the program will work only if the user has pdflatex.exe (MikTeX) on its computer and the program is accessible from any directory (in Windows, included in the path)
 	  #my.final.sentence: string with a sentence to be written (in bold) at the end of each test
+    #files.to.move: files to move to the outdir 
     ######################
     # supporting functions
     #######################
@@ -59,7 +62,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
     if(length(x) <= 1) { if(!missing(size) && size == 0) x[FALSE] else x
     } else sample(x, size, ...)
     
-	my.error<<-"No errors were found" 	
+	my.error<-"No errors were found" 	
 	
 
 	
@@ -70,10 +73,24 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
 
    
    #read data
-	 #modified to read data from a character srintg
-   my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
-	 if(class(my.data)=="try-error") {my.error<<-"I cannot open the file with questions"
-									stop("I cannot open the file with questions")} 
+	 #modified to read data from a character string
+   
+     
+     
+     
+   	#added July 2013, can use R objects
+   	if(class(my.db.name)!="character" & class(my.db.name)!="data.frame") {
+   	  my.error<-"my.db.name should be a string with the path to a tab delimited file or an R data.frame"
+   	  stop("my.db.name should be a string with the path to a tab delimited file or an R data.frame")
+       
+   	}
+     
+     if(class(my.db.name)=="character"){
+   	  
+     
+     my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
+	 if(class(my.data)=="try-error") {my.error<-"I cannot open the file with questions"
+									stop("I cannot open the file with questions")} }  else my.data=my.db.name #if passed as an R object
 									
 	#treat the empty cells as missing!
 	my.data[my.data==""]<-NA
@@ -87,12 +104,12 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
    	  #define the names of the directory where the files will be stored, creates a subdirectory of the working directoty 
    	  
    	  my.oldwd<-getwd()
-   	  my.outdir=paste(my.oldwd, paste("Exams",format(Sys.Date(), "%b%d%Y"), format(Sys.time(), "%H%M"), sep=""), sep="/")
+   	  my.outdir=file.path(my.oldwd, paste("Exams",format(Sys.Date(), "%b%d%y"), format(Sys.time(), "%H%M%S"), sep=""))
    	  
    	  my.command=paste("mkdir", my.outdir)
    	  system(my.command)
    	} else {
-   	  if(is.na(file.info(my.outdir)$isdir)) {my.error<<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
+   	  if(is.na(file.info(my.outdir)$isdir)) {my.error<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
    	                                         stop("The directory that you choose to store the results does not exist. Please specify an existing directory of leave the my.outdir argument empty. A directory named Exams + the current date and time will be created in your working directory.")}
    	}
    	
@@ -112,7 +129,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
     Remember.questions.index<-Remember.questions.index.end<-vector("list", num.tests)
 
 	#check if there is a variable called Question.ID in the database of questions, if not stop
-	if(is.null(my.data$Question.ID)) {my.error<<-"You need to include a column called Question.ID or Question ID in the database of questions" 
+	if(is.null(my.data$Question.ID)) {my.error<-"You need to include a column called Question.ID or Question ID in the database of questions" 
 			stop("You need to include a column called Question.ID is the database of questions")}
 
     #indicator of which lines in the database contain the beginning of a question - and the info about the
@@ -131,7 +148,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
 	
 	###### correggere! 12/2/2010
 	unique.not.matched<-unique(unlist(list.QID)[!match.id])
-	my.error<<-as.character(c("Some of the questions that you selected are not present in the database of questions (Question ID does not match)\n Missing questions are: ", as.character(unique.not.matched)))
+	my.error<-as.character(c("Some of the questions that you selected are not present in the database of questions (Question ID does not match)\n Missing questions are: ", as.character(unique.not.matched)))
 			stop("Please make sure that all the questions that you selected appear in the database of questions (Question.ID column)")
 			}
 
@@ -152,11 +169,11 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
 	
 	
 	#check if there is a column called Points in the database of questions, if not stop 
-	if(is.null(my.data$Points)) { my.error<<-"You need to include a column called Points is the database of questions"
+	if(is.null(my.data$Points)) { my.error<-"You need to include a column called Points is the database of questions"
 		stop("You need to include a column called Points is the database of questions")} 
 
 	#check if there is a column called Points in the database of questions, if not stop 
-	if(is.null(my.data$Question)) {my.error<<-"You need to include a column called Question is the database of questions"
+	if(is.null(my.data$Question)) {my.error<-"You need to include a column called Question is the database of questions"
 		stop("You need to include a column called Question is the database of questions")}
 
 		
@@ -187,7 +204,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
   
   
 	#check if the Points were specified for each question in the database of questions, if not stop 
-	if(any(is.na(my.data$Points[which.questions]))) {my.error<<-"You need to specify the number of points for each of the question included in the database" 
+	if(any(is.na(my.data$Points[which.questions]))) {my.error<-"You need to specify the number of points for each of the question included in the database" 
 		stop("You need to specify the number of points for each of the question included in the database")}
 
   
@@ -286,7 +303,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
     #############################################
    
 		#generating the name of the file with the exams
-		if(use.Sweave)     zz<-paste(my.outdir, "\\", my.prefix, tt, ".rnw", sep="") else     zz<-paste(my.outdir, "\\", my.prefix, tt, ".tex", sep="")
+		if(use.Sweave)     zz<-file.path(my.outdir, paste(my.prefix, tt, ".rnw", sep="")) else     zz<-file.path(my.outdir, paste(my.prefix, tt, ".tex", sep=""))
 		#saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
 		#tests 
 		my.filenames[tt]<-zz
@@ -300,7 +317,7 @@ genertestPreSelect<-function(my.db.name, my.outdir, list.QID, num.tests=NULL,
 									warning("You did not include a column with the answers in the database of questions - it must be called: Answer")	
 										}
 			#generate the name of the file with the answers
-			if(use.Sweave) zz.sol<-paste(my.outdir, "\\",  my.prefix,  tt, "sol",  ".rnw", sep="") else zz.sol<-paste(my.outdir, "\\",  my.prefix,  tt, "sol",  ".tex", sep="")
+			if(use.Sweave) zz.sol<-file.path(my.outdir, paste(my.prefix,  tt, "sol",  ".rnw", sep="")) else zz.sol<-file.path(my.outdir, paste(my.prefix,  tt, "sol",  ".tex", sep=""))
 		
 			#saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
 			#solutions 
@@ -414,7 +431,7 @@ for(i in 1:length(index.questions.vector)){
                 #############################################################
                 # beginning of writing of the file with the questions #######
                 ##############################################################
-                if(use.Sweave) zz<-paste(my.outdir, "\\", my.prefix, pp, tt, ".rnw", sep="") else zz<-paste(my.outdir, "\\", my.prefix, pp, tt, ".tex", sep="")
+                if(use.Sweave) zz<-file.path(my.outdir, paste(my.prefix, pp, tt, ".rnw", sep="")) else zz<-file.path(my.outdir, paste(my.prefix, pp, tt, ".tex", sep=""))
 
 				#saving the name of the file
 				my.filenames[num.tests+repeat.each.test*(tt-1)+pp]<-zz
@@ -423,7 +440,7 @@ for(i in 1:length(index.questions.vector)){
 				if(generate.solutions) {
 	
 					#generate the name of the file with the answers
-					if(use.Sweave) zz.sol<-paste(my.outdir, "\\",  my.prefix,  pp, tt, "sol",  ".rnw", sep="") else zz.sol<-paste(my.outdir, "\\",  my.prefix,  pp, tt, "sol",  ".tex", sep="")
+					if(use.Sweave) zz.sol<-file.path(my.outdir, paste(my.prefix,  pp, tt, "sol",  ".rnw", sep="")) else zz.sol<-file.path(my.outdir, paste(my.prefix,  pp, tt, "sol",  ".tex", sep=""))
 	
 					#saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
 					#solutions 
@@ -518,6 +535,22 @@ for(i in 1:length(index.questions.vector)){
 		#cat(my.filenames)
 		#cat(my.filenames.sol)
 
+     
+   	
+   	#######################
+   	# move the files
+   	#######################
+   	
+   	
+   	################ moving the extra files needed to generate the exams ################
+   	
+   	if(!is.null(files.to.move)){
+   	  #moves the files
+   	  file.copy(files.to.move, my.outdir)
+   	}#end move the files
+   	
+     
+     
 	################################
 	#compiling Sweave files 
 	################################
@@ -562,16 +595,26 @@ for(i in 1:length(index.questions.vector)){
 		#if(generate.solutions) my.files<-c(my.filenames, my.filenames.sol) else my.files<-my.filenames
 
 		for(i in 1:length(my.files)){
-			my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
-			my.file<-unlist(strsplit(my.file,  "\\\\"))
-			my.file<-my.file[length(my.file)]
+			#my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
+			#my.file<-unlist(strsplit(my.file,  "\\\\"))
+			#my.file<-my.file[length(my.file)]
 		
+      #my.file=basename(my.files[i])
+      
       #changed July 2013, uses texi2dvi instead of pdflatex
       #my.command<-paste("pdflatex", my.file)
 			##	system(my.command) modified 15/2/2010 to take check for possible errors in pdflatex function, and stop the function in case of errors
       #out.pdflatex<-try(system(my.command) )
 			#if(out.pdflatex!=0)         {
       
+      
+		  #extract just the name of the file, without using the path and use the tex files only
+		  my.file=paste(unlist(strsplit(basename(my.files[i]), "\\."))[[1]], ".tex", sep="")
+		  #cat(my.files[i], " file or \n")
+      #cat(my.file, " file transf \n")
+		  #cat(getwd(), " WD \n")
+		  #cat(my.outdir, " OD \n")
+		  
       
 			out.pdflatex=try(texi2dvi(my.file, pdf=TRUE, clean=TRUE, quiet=TRUE))
 			
@@ -583,7 +626,7 @@ for(i in 1:length(index.questions.vector)){
       
        #return to the original directory
        setwd(my.oldwd)
-			my.error<<-"There was an error in compiling LaTeX in PDF files with texi2dvi - more details are displayed in the R console"
+			my.error<-"There was an error in compiling LaTeX in PDF files with texi2dvi - more details are displayed in the R console"
 									stop("There was an error compiling the LaTeX file(s)")
 			
 			}# end out.pdflatex, error in pdf compilation
@@ -595,9 +638,9 @@ for(i in 1:length(index.questions.vector)){
 
 
 	#saving the names of the final output files, tex or pdf, depending on the selected options
-	for(i in 1:length(my.files)){
-		if(compile.pdf) my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".pdf", sep="")	else my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")
-	}	
+	#for(i in 1:length(my.files)){
+	#	if(compile.pdf) my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".pdf", sep="")	else my.files[i]<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")
+	#}	
 
 	#outputting questions ID instead of row number
 	Remember.questions.index<-lapply(Remember.questions.index, function(x) my.data$Question.ID[x])
@@ -605,6 +648,29 @@ for(i in 1:length(index.questions.vector)){
     names(Remember.questions.index)<-paste("Test", 1:num.tests)   
 
 	
-	return(list(Questions=Remember.questions.index, files=my.files))       
+   	
+   	
+   	################ save separately the name of the files and the directory where they are stored
+  
+   	names.files=basename(my.files)
+   	for(i in 1:length(names.files))
+     if(compile.pdf) names.files[i]=paste(unlist(strsplit(basename(names.files[i]), "\\."))[[1]], ".pdf", sep="") else 
+       names.files[i]=paste(unlist(strsplit(basename(names.files[i]), "\\."))[[1]], ".tex", sep="")
+   	
+     
+   	dir.files=dirname(my.files)[1]
+   	
+     
+   	my.files=file.path(dir.files, names.files)
+     
+   	if(compile.pdf==TRUE & merge.pdf==TRUE) Merge.pdf(my.files=names.files, my.dir=dir.files, outfile="MergedFiles")
+   	
+     
+   
+   	merged.file=ifelse(compile.pdf==TRUE & merge.pdf==TRUE, file.path(dir.files, "MergedFiles.pdf"), "Merging of the PDF files not requested")
+   	
+     
+     
+	return(list(Questions=Remember.questions.index, files=my.files, names.files=names.files, dir.files=dir.files, merged.file=merged.file, errors=my.error))       
 }#end function genertestPreSelect()   
        

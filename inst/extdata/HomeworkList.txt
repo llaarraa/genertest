@@ -1,20 +1,25 @@
-Group	Type	Sources	HomeworkText	DueDate	Order	Template	Notes
-Mice	Descriptive Statistics	Lecture Notes	Answer to the following questions	1st of October 2012	1	Descriptive.doc	Easy homework
-			"Calculate the mean of the following data:  
+Group	Type	Sources	Question	Answer	DueDate	Order	Template	Notes
+Mice	Descriptive Statistics	Lecture Notes	Answer to the following questions		1st of October 2012	1	Descriptive.doc	Easy homework
+			"Calculate the mean of the following data: 
+ 
 <<results=tex, echo=false>>=
 x<-rnorm(4,2,6)
 x<-round(x)
 cat(x, sep="","")
-@"				
+@
+"	The mean is \Sexpr{round(mean(x),2)}				
 			"Calculate the standard deviation of the following data:  
+
 <<results=tex, echo=false>>=
 x<-rnorm(4,2,6)
 x<-round(x)
 cat(x, sep="","")
-@"				
+@
+"	The standard deviation is \Sexpr{round(sd(x),2)}				
 			"Data for the  variable nn are represented graphically. Determine (approximately) the mean and the standard deviation of the variable.\\ 
 \begin{tabular}{c}
 \resizebox{50mm}{!}{
+
 <<echo=false,fig=true>>=
 mu<-sample(c(-3,0,3), 1)
 sigma<-sample(c(1,2,4), 1)
@@ -22,20 +27,21 @@ nn<-rnorm(500, mu, sigma)
 hist(nn, cex.axis=2, cex=2, cex.lab=2)
 @
 }
-\end{tabular}"				
-Ducks	Descriptive Statistics	Book	Answer to the following questions	8th of October 2012	2	Descriptive.doc	Same homework as Mice, with different numbers
+\end{tabular}"	The mean is \Sexpr{mu} and the standard deviation is \Sexpr{sigma).				
+Ducks	Descriptive Statistics	Book	Answer to the following questions		8th of October 2012	2	Descriptive.doc	Same homework as Mice, with different numbers
 			"Calculate the mean of the following data:  
 <<results=tex, echo=false>>=
 x<-rnorm(4,2,6)
 x<-round(x)
 cat(x, sep="","")
-@"				
+@"	The mean is \Sexpr{round(mean(x),2)}				
 			"Calculate the standard deviation of the following data:  
 <<results=tex, echo=false>>=
 x<-rnorm(4,2,6)
 x<-round(x)
 cat(x, sep="","")
-@"				
+@
+"	The standard deviation is \Sexpr{round(sd(x),2)}				
 			"Data for the  variable nn are represented graphically. Determine (approximately) the mean and the standard deviation of the variable.\\ 
 \begin{tabular}{c}
 \resizebox{50mm}{!}{
@@ -46,17 +52,19 @@ nn<-rnorm(500, mu, sigma)
 hist(nn, cex.axis=2, cex=2)
 @
 }
-\end{tabular}"				
-YoungDucks	Probability	Lecture Notes	"<<results=tex, echo=false>>= 
+\end{tabular}"	The mean is \Sexpr{mu} and the standard deviation is \Sexpr{sigma).				
+YoungDucks	Probability	Lecture Notes	"
+<<results=tex, echo=false>>= 
 n<-round(runif(1, 4, 10),0)
 p<-round(runif(1, min=.1, max=.9), 1)
 @
-A genetically modified mouse does not survive the first month of life with probability \Sexpr{p} ."	15th of October 2012	3	Probability.doc	Young group of students
-			 We planned an experiment that included \Sexpr{n} mice. What is the probability that after a month not more than a mouse will survive?				
-			What is the expected number of mice still alive after the first month?				
+A genetically modified mouse does not survive the first month of life with probability \Sexpr{p} ."		15th of October 2012	3	Probability.doc	Young group of students
+			 We planned an experiment that included \Sexpr{n} mice. What is the probability that after a month not more than a mouse will survive?	"$X=1$ survive, $P(X=1)=p=\Sexpr{1-p}, n=\Sexpr{n}, Y=sum(X), P(Y<=1)=P(Y=0)+P(Y=1)=(1-p)^n+n*p(1-p)^(n-1)$ -> $P(Y<=1)= \Sexpr{ round(pbinom(1, n, 1-p), 3)}$.
+}$"				
+			What is the expected number of mice still alive after the first month?	$E(X)=pn -> E(X)=\Sexpr{round(n*p,2)}$				
 			"Is the animal represented in the picture a genetically modified mouse?
 \begin{tabular}{c}
 \resizebox{50mm}{!}{
 \includegraphics{yoyopdf}
 }
-\end{tabular}"				
+\end{tabular}"					

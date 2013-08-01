@@ -5,9 +5,9 @@ Morty Fieldmouse	Mice
 Ferdie Fieldmouse	Mice
 Donald Duck	Ducks
 Daisy Duck	Ducks
- Scrooge McDuck	Ducks
+Scrooge McDuck	Ducks
 Gladstone Gander	Ducks
-"Elvira ""Grandma Duck"" Coot "	Ducks
+Elvira Grandma Duck Coot	Ducks
 April Duck	YoungDucks
 May Duck	YoungDucks
 June Duck	YoungDucks

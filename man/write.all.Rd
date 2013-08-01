@@ -10,13 +10,13 @@ generate.solutions = FALSE,
 my.title = "", my.date = "", my.prefix = "exam", 
 head.name = "Name", head.id = "ID number", 
 head.points = "Number of points", head.prefix = "MED", 
-my.language = "english", use.Sweave = FALSE, compile.pdf = FALSE)
+my.language = "english", use.Sweave = TRUE, compile.pdf = TRUE, files.to.move=NULL)
 }
 \arguments{
-  \item{my.data}{Name of the tab delimited file including the questions, either the full path should be given or the file should be placed in the R working directory, should be a string, written between quotes}
+  \item{my.db.name}{Name of the tab delimited file including the questions, either the full path should be given or the file should be placed in the R working directory, should be a string, written between quotes. Alternatively, an R data.frame can be passed as an argument. See details.}
   \item{my.outdir}{Name of the directory where the exams will be written, should be a string, written between quotes; full path must be given}
    \item{my.seed}{Seed used to inizialize the random number generator, useful to get reproducibile results}
-  \item{my.include}{The number of the column in the database of questions in which a TRUE/FALSE indicator in included, to indicate which questions should be included (T) (or excluded (F)), if left to defalut NA all the questions should be considere for inclusion. The column number rather than a fixed name is used since in principle the same database can be used to generate test for different courses or of different difficulties}
+%  \item{my.include}{The number of the column in the database of questions in which a TRUE/FALSE indicator in included, to indicate which questions should be included (T) (or excluded (F)), if left to defalut NA all the questions should be considere for inclusion. The column number rather than a fixed name is used since in principle the same database can be used to generate test for different courses or of different difficulties}
   \item{generate.solutions}{Indicator (TRUE or FALSE) that indicates if the solutions of the tests must be generated; if set to TRUE it generated a LaTeX (or PDF) file with solutions corresponding to each exam}
   \item{my.title}{Name of the exam - to be displayed in the header}
   \item{my.date}{Date of the exam - to be displayed in the header}
@@ -26,11 +26,13 @@ my.language = "english", use.Sweave = FALSE, compile.pdf = FALSE)
   \item{head.points}{String indicating how to indicate the number of points - to be displayed in the header (the default is "Number of points" but it can be changed if a language different than English is used)}
   \item{head.prefix}{An alpha-numerical ID is generated for each test. The ID is generated pasting \code{ head.prefix}, a random number and a progressive number that indicates the test}
   \item{my.language}{String indicating the language in which the test is written - it is used to call a LaTeX Babel package that contains the appropriate language settings (a call to the Babel package will be included in the header of the *.tex files)}
-  \item{use.Sweave}{Indicator of whether in the database there are some exercises written using Sweave code; default is FALSE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details }
+  \item{use.Sweave}{Indicator of whether in the database there are some exercises written using Sweave code; default is TRUE, if set to TRUE *.rnw files will be generated and compiled to *.tex (or *.pdf) files. See details }
   \item{compile.pdf}{Indicator of whether the *.tex files should be compiled to *.pdf files (compiled if set to TRUE. See details}
+     \item{files.to.move}{Vector of strings indicating the (full path) name of the files that should be moved in the same directory as the exams, if not specified, all the files in dir.files.to.move are moved.}
+
 }
 \details{
-See function genertest() for more details.
+The data set with questions must be prepared using a similar structure as the example data from this library. The inclusion of some variables is mandatory (Question, Question.ID) other variables can be included (Answer, Topic, Points, etc). See \code{\link{dbQuestions}} for more details. See function \code{genertest} for more details.
 }
 \value{
 Writes LaTeX (od PDF) files containing the texts of the exams and returns a list containing the IDs of the questions selected for each test and the list of the files *.tex files that were generated. 
@@ -43,7 +45,7 @@ Writes LaTeX (od PDF) files containing the texts of the exams and returns a list
 \author{Lara Lusa}
 \note{}
 
-\seealso{\code{\link{genertest}}, \code{\link{my.data}}}
+\seealso{\code{\link{genertest}}, \code{\link{dbQuestions}}}
 \examples{
 ##data(my.data)
 my.title<-"Medical Faculty - Undergraduates  - Exam of Biostatistics"
@@ -56,7 +58,7 @@ TMP1<-write.all(my.file.name, my.outdir=NULL, my.seed=2,
 generate.solutions=TRUE, my.title=my.title, my.date=my.date, 
 my.prefix="Exam", head.name="Name", head.id="ID Number", 
 head.points="Points", head.prefix="Exam", my.language="english", 
-use.Sweave=TRUE, compile.pdf=TRUE)
+use.Sweave=TRUE, compile.pdf=TRUE, files.to.move=NULL)
 
 
 

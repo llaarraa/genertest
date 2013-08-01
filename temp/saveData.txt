@@ -1,0 +1,49 @@
+setwd("C:\\Users\\lara\\Dropbox\\genertest\\Rlibrary\\genertest\\inst\\extdata")
+data.dir="C:\\Users\\lara\\Dropbox\\genertest\\Rlibrary\\genertest\\data\\"
+
+
+my.data=dbQuestions=read.delim("QuestionsExamples.txt", sep="\t",  blank.lines.skip=TRUE)
+	#treat the empty cells as missing!
+	my.data[my.data==""]<-NA
+	#remove lines where all the entries are missing
+	my.data<-my.data[!(apply(my.data, 1, function(x) all(is.na(x)))),]
+	
+
+	
+	dbQuestions=my.data
+	
+	save(dbQuestions, file=paste(data.dir, "dbQuestions.rda", sep=""))
+	
+	
+
+	
+my.data=dbHomeworks=read.delim("HomeworkList.txt", sep="\t",  blank.lines.skip=TRUE)
+	#treat the empty cells as missing!
+	my.data[my.data==""]<-NA
+	#remove lines where all the entries are missing
+	my.data<-my.data[!(apply(my.data, 1, function(x) all(is.na(x)))),]
+	
+
+	
+	dbHomeworks=my.data
+	
+	save(dbHomeworks, file=paste(data.dir, "dbHomeworks.rda", sep=""))
+	
+	
+	
+	
+	
+my.data=dbStudents=read.delim("StudentList.txt", sep="\t",  blank.lines.skip=TRUE)
+	#treat the empty cells as missing!
+	my.data[my.data==""]<-NA
+	#remove lines where all the entries are missing
+	my.data<-my.data[!(apply(my.data, 1, function(x) all(is.na(x)))),]
+	
+
+	
+	dbStudents=my.data
+	
+	save(dbStudents,  file=paste(data.dir, "dbStudents.rda", sep=""))
+	
+	
+	

@@ -36,14 +36,19 @@ cat(x, sep="","")
 			\Sexpr{median(x)} 	F				
 			\Sexpr{mean(x)+1} 	F				
 			does not exist	F				
-Probability	15	6	We planned an experiment that included \Sexpr{n} mice. What is the probability that after a month not more than a mouse will survive?				4	T
-			What is the expected number of mice still alive after the first month?	"
+Probability	15	6	"
+<<results=hide, echo=false>>=
+n=sample(5:10, 1)
+p=round(runif(1, min=0.1, max=0.9),1)
+@
+The probability that a mouse survives for at least one month is \Sexpr{p}."				4	T
+			We planned an experiment that included \Sexpr{n} mice. What is the probability that after a month not more than a mouse will survive?	"~
 <<results=tex, echo=false>>=
 cat(""$X=1 survive, P(X=1)=p=$"", p, "" $Y=sum(X), P(Y<=1)=P(Y=0)+P(Y=1)=(1-p)^n+n*p(1-p)^(n-1)=$"", 
 round((1-p)^n+n*p*(1-p)^9, 4), sep="""")
 @
 "	3			
-				"
+			What is the expected number of mice still alive after the first month?	"
 <<results=tex, echo=false>>=
 cat(""E(X)=pn -> E(X)="", n*p, sep="""")
 @

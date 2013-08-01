@@ -8,7 +8,7 @@
 
 write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
                     generate.solutions=FALSE, my.title="", my.date="", my.prefix="exam",     head.name="Name", head.id="ID number", 
-                    head.points="Number of points", head.prefix="MED", my.language="english", use.Sweave=FALSE, compile.pdf=FALSE
+                    head.points="Number of points", head.prefix="MED", my.language="english", use.Sweave=TRUE, compile.pdf=TRUE, files.to.move=NULL
                     ){
   
   ##################################################
@@ -37,7 +37,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   #######################
   
   
-  my.error<<-"No errors were found" 	
+  my.error<-"No errors were found" 	
   
   resample <- function(x, size, ...)
     if(length(x) <= 1) { if(!missing(size) && size == 0) x[FALSE] else x
@@ -64,12 +64,12 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
     #define the names of the directory where the files will be stored, creates a subdirectory of the working directoty 
     
     my.oldwd<-getwd()
-    my.outdir=paste(my.oldwd, paste("AllQuestions",format(Sys.Date(), "%b%d%Y"), format(Sys.time(), "%H%M"), sep=""), sep="/")
+    my.outdir=file.path(my.oldwd, paste("AllQuestions",format(Sys.Date(), "%b%d%y"), format(Sys.time(), "%H%M%S"), sep=""))
     
     my.command=paste("mkdir", my.outdir)
     system(my.command)
   } else {
-    if(is.na(file.info(my.outdir)$isdir)) {my.error<<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
+    if(is.na(file.info(my.outdir)$isdir)) {my.error<-"The directory that you choose to store the results does not exist, please specify an existing directory or leave the my.outdir argument empty."
                                            stop("The directory that you choose to store the results does not exist. Please specify an existing directory of leave the my.outdir argument empty. A directory named Exams + the current date and time will be created in your working directory.")}
   }
   
@@ -80,9 +80,20 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   
 
   #read data
-  my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
-  if(class(my.data)=="try-error") {my.error<<-"I cannot open the file with questions"
-                                   stop("I cannot open the file with questions")} 
+  #July 2013: can be read also from a data.frame
+  
+  if(class(my.db.name)!="character" & class(my.db.name)!="data.frame") {
+    my.error<-"my.db.name should be a string with the path to a tab delimited file or an R data.frame"
+    stop("my.db.name should be a string with the path to a tab delimited file or an R data.frame")
+    
+  }
+  
+  
+  
+  if(class(my.db.name)=="character"){
+              my.data<-try(read.delim(as.character(my.db.name), sep="\t", blank.lines.skip=TRUE))
+              if(class(my.data)=="try-error") {my.error<-"I cannot open the file with questions"
+                                   stop("I cannot open the file with questions")}} else  my.data=my.db.name 
   
   
   #my.data<-read.delim(as.character(my.data), sep="\t", blank.lines.skip=TRUE)
@@ -111,7 +122,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   #for(tt in 1:num.tests){
   
   #check if there is a variable called Question.ID in the database of questions, if not stop
-  if(is.null(my.data$Question.ID)) {my.error<<-"You need to include a column called Question.ID is the database of questions"
+  if(is.null(my.data$Question.ID)) {my.error<-"You need to include a column called Question.ID is the database of questions"
                                     stop("You need to include a column called Question.ID is the database of questions")}
   
   
@@ -121,11 +132,11 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   
   
   #check if there is a column called Points in the database of questions, if not stop 
-  if(is.null(my.data$Points)) {my.error<<-"You need to include a column called Points is the database of questions"
+  if(is.null(my.data$Points)) {my.error<-"You need to include a column called Points is the database of questions"
                                stop("You need to include a column called Points is the database of questions")}
   
   #check if there is a column called Points in the database of questions, if not stop 
-  if(is.null(my.data$Question)) {my.error<<-"You need to include a column called Question is the database of questions"
+  if(is.null(my.data$Question)) {my.error<-"You need to include a column called Question is the database of questions"
                                  stop("You need to include a column called Question is the database of questions")}
   
   
@@ -150,7 +161,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   
   
   #check if there the Points were specified for each question in the database of questions, if not stop 
-  if(any(is.na(my.data$Points[which.questions]))) {my.error<<-"You need to specify the number of points for each of the question included in the database"
+  if(any(is.na(my.data$Points[which.questions]))) {my.error<-"You need to specify the number of points for each of the question included in the database"
                                                    stop("You need to specify the number of points for each of the question included in the database")}
   
   
@@ -244,7 +255,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   #############################################
   
   #generating the name of the file with the exams
-  if(use.Sweave)     zz<-paste(my.outdir, "\\", my.prefix, "All", ".rnw", sep="") else     zz<-paste(my.outdir, "\\", my.prefix, "All", ".tex", sep="")
+  if(use.Sweave)     zz<-file.path(my.outdir,  paste(my.prefix, "All", ".rnw", sep="")) else     zz<-file.path(my.outdir, paste(my.prefix, "All", ".tex", sep=""))
   #saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
   #tests 
   
@@ -258,7 +269,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
     }
     
     #generate the name of the file with the answers
-    if(use.Sweave) zz.sol<-paste(my.outdir, "\\",  my.prefix,  "All", "sol",  ".rnw", sep="") else zz.sol<-paste(my.outdir, "\\",  my.prefix,  "All", "sol",  ".tex", sep="")
+    if(use.Sweave) zz.sol<-file.path(my.outdir, paste(my.prefix,  "All", "sol",  ".rnw", sep="")) else zz.sol<-file.path(my.outdir, paste(my.prefix,  "All", "sol",  ".tex", sep=""))
     
     #saving the names of the files (rnw or tex, depending on whether Sweave is used or not)
     #solutions 
@@ -368,6 +379,16 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
   
   
   
+  ################ moving the extra files needed to generate the exams ################
+  
+  if(!is.null(files.to.move)){
+    #moves the files
+    file.copy(files.to.move, my.outdir)
+  }#end move the files
+  
+  
+  
+  
   
   
   
@@ -416,15 +437,20 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
     #if(generate.solutions) my.files<-c(zz, zz.sol) else my.files<-zz
     
     for(i in 1:length(my.files)){
-      my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
-      my.file<-unlist(strsplit(my.file,  "\\\\"))
-      my.file<-my.file[length(my.file)]
+      #my.file<-paste((strsplit(my.files[i], "\\."))[[1]][1], ".tex", sep="")	
+      #my.file<-unlist(strsplit(my.file,  "\\\\"))
+      #my.file<-my.file[length(my.file)]
       #modified July 2013: using texi2dvi
       #my.command<-paste("pdflatex", my.file)
       ##system(my.command) modified 15/02/2010, checking for errors, 
       #out.pdflatex<-try(system(my.command))
       #if there was an error - returns a code different than 0
       #if(out.pdflatex!=0)         {
+      
+      #extract just the name of the file, without using the path and use the tex files only
+      my.file=paste(unlist(strsplit(basename(my.files[i]), "\\."))[[1]], ".tex", sep="")
+      
+      
       
       
       #July 2013: using texi2dvi
@@ -435,7 +461,7 @@ write.all<-function(my.db.name, my.outdir=NULL, my.seed=1999, #my.include=NA,
       
         #return to the original directory
         setwd(my.oldwd)
-        my.error<<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
+        my.error<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
         stop("There was an error compiling the LaTeX file(s)")
         
       }# end out.pdflatex, error in pdf compilation

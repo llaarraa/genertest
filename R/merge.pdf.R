@@ -10,14 +10,12 @@ function(genertest.output=NULL, my.files=NULL, my.dir=NULL, outfile="merge"){
 	########################################################
 	#output: a merged pdf file, in the same directory as the original pdf files - in my.dir
 
-  
+  my.error="There were no errors in merging the files"
   
 	if(!is.null(genertest.output)){
-	                my.files<-unlist(lapply(strsplit(unlist(lapply(strsplit(TMP$files, "\\."), 
-	                                               function(x) paste(x[1], ".pdf", sep=""))), "\\\\"), function(x) x[length(x)]))
-	
-	                my.dir=unlist(lapply(strsplit(unlist(lapply(strsplit(TMP$files, "\\."), 
-	                                            function(x) paste(x[1], ".pdf", sep=""))), "\\\\"), function(x) x[-length(x)]))[1]
+	                my.files<-genertest.output$names.files
+                  my.dir=genertest.output$dir.files
+                  
 	
 	}
   
@@ -34,7 +32,7 @@ function(genertest.output=NULL, my.files=NULL, my.dir=NULL, outfile="merge"){
   
   
 	#preparing the tex file for writing
-	my.outfile<-paste(paste(my.dir, outfile, sep="\\"), ".tex", sep="")
+	my.outfile<-file.path(my.dir, paste(outfile, ".tex", sep=""))
 	sink(my.outfile)
 	cat("\\documentclass{article}", "\\usepackage[cm,empty]{fullpage}", "\\usepackage{pdfpages}", "\\begin{document}",  sep="\n")	
 	cat("\\includepdfmerge[pages=-]{")
@@ -52,7 +50,7 @@ function(genertest.output=NULL, my.files=NULL, my.dir=NULL, outfile="merge"){
 	if(!is.null(out.pdflatex))         {
 	  #return to the original directory
 	  setwd(my.oldwd)
-	  my.error<<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
+	  my.error<-"There was an error in compiling LaTeX in PDF files with pdflatex - more details are displayed in the R console"
 	  stop("There was an error compiling the LaTeX file(s)")
 	  
 	}# end out.pdflatex, error in pdf compilation
@@ -60,7 +58,7 @@ function(genertest.output=NULL, my.files=NULL, my.dir=NULL, outfile="merge"){
 
   
 	setwd(my.oldwd)
-	return(list(file=paste(paste(my.dir, outfile, sep="/"), "pdf", sep="."), errors=my.error))
+	return(list(file=file.path(my.dir, paste(outfile, "pdf", sep=".")), errors=my.error))
 
 }
 
