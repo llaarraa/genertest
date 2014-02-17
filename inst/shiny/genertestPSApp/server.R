@@ -164,9 +164,17 @@ shinyServer(function(input, output) {
     
     #obtain the list with the questions
     list.QID=apply(input$QID[-1,],2, function(x) x[!is.na(x) & x!=0] )
+	
+	
+	#Bug fixed Sept2013: transform in a list, if not done automatically (as it is done when the number of questions is not the same for all the tests
+	
+	if(class(list.QID)=="matrix")  list.QID=as.list(as.data.frame(list.QID))
+	
     #remove possibly empty tests
     list.QID=list.QID[unlist(lapply(list.QID, function(x) length(x)>0))]
     
+	
+	
     
     
     #cat(input$my.outdir, "\n\n\n")
