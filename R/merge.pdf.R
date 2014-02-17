@@ -36,9 +36,13 @@ function(genertest.output=NULL, my.files=NULL, my.dir=NULL, outfile="merge"){
 	sink(my.outfile)
 	cat("\\documentclass{article}", "\\usepackage[cm,empty]{fullpage}", "\\usepackage{pdfpages}", "\\begin{document}",  sep="\n")	
 	cat("\\includepdfmerge[pages=-]{")
-	#bug fixed Sept2013, without the ,-, would include the first page only in the merged file
-	cat(my.files, sep=",-, ")
-	cat(",-")
+	#cat(my.files, sep=", ")
+	
+    #bug fixed Sept2013, without the ,-, would include the first page only in the merged file
+    cat(my.files, sep=",-, ")
+    cat(",-")
+
+	
 	cat("}",  "\\end{document}", sep="\n")
 	sink()
 	my.oldwd<-getwd()
